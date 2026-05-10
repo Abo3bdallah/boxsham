@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة محاكي الصناديق الاستثمارية - للمجموعات</title>
+    <!-- تضمين مكتبة Tailwind CSS للتنسيق -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* استيراد خط تجوال لتصميم عربي عصري */
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #0f172a; /* لون خلفية داكن (Slate 900) */
+            color: #f8fafc;
+        }
+        
+        /* تأثيرات حركة للبطاقات */
+        .fund-card {
+            transition: all 0.3s ease;
+        }
+        .fund-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* تخصيص مظهر حقل الإدخال */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* تنسيقات شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b; 
+        }
+
+        /* --- إضافات شاشة الأسهم الجديدة --- */
+        @keyframes flashGreen {
+            0% { background-color: rgba(16, 185, 129, 0.6); }
+            100% { background-color: transparent; }
+        }
+        @keyframes flashRed {
+            0% { background-color: rgba(239, 68, 68, 0.6); }
+            100% { background-color: transparent; }
+        }
+        .stock-flash-up {
+            animation: flashGreen 2.5s ease-out;
+        }
+        .stock-flash-down {
+            animation: flashRed 2.5s ease-out;
+        }
+        
+        /* شريط الأخبار المتحرك */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background-color: #020617; /* لون داكن جداً */
+            border-top: 1px solid #334155;
+            border-bottom: 1px solid #334155;
+            white-space: nowrap;
+            padding: 8px 0;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-content {
+            display: inline-block;
+            animation: tickerScroll 20s linear infinite;
+        }
+        @keyframes tickerScroll {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* حالة الاتصال */
+        #connectionStatus {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 relative">
+
+    <!-- أزرار تبديل الشاشات وحالة الاتصال -->
+    <div class="fixed bottom-5 left-5 z-50 flex flex-col gap-2">
+        <div id="connectionStatus" class="bg-slate-800 text-xs text-slate-400 p-2 rounded-lg border border-slate-700 text-center flex items-center justify-center gap-2">
+            <span class="relative flex h-3 w-3">
+              <span id="pingDot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span id="solidDot" class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </span>
+            <span id="connectionText">جاري الاتصال بالسحابة...</span>
+        </div>
+        <div class="flex gap-2 bg-slate-800 p-2 rounded-full border border-slate-700 shadow-2xl flex-wrap justify-center">
+            <button onclick="switchView('screen')" id="btnViewScreen" class="px-4 py-2 rounded-full font-bold transition-all bg-blue-600 text-white shadow-lg">شاشة العرض</button>
+            <button onclick="switchView('entry')" id="btnViewEntry" class="px-4 py-2 rounded-full font-bold transition-all text-slate-400 hover:text-white">لوحة الإدخال</button>
+            <button onclick="switchView('admin')" id="btnViewAdmin" class="px-4 py-2 rounded-full font-bold transition-all text-slate-400 hover:text-white">الإدارة الشاملة</button>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 1. شاشة العرض (للطلاب / البروجكتر) -->
+    <!-- ========================================== -->
+    <div id="screenView" class="w-full flex flex-col items-center">
+        <!-- قسم الرأس -->
+        <header class="text-center mb-6 w-full max-w-5xl flex flex-col items-center">
+            <h1 class="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 drop-shadow-lg">تحدي المستثمر الذكي</h1>
+            
+            <div class="relative inline-flex items-center gap-4 bg-[#0f172a] border border-slate-700 shadow-[0_0_20px_rgba(0,0,0,0.5)] rounded-full px-2 py-2 pr-6 mb-2">
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-full"></div>
+                <div class="flex items-center gap-2 relative z-10">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span class="text-slate-300 font-bold tracking-wide text-lg">يوم التداول</span>
+                </div>
+                <div class="relative z-10 bg-gradient-to-br from-emerald-500 to-teal-600 text-white border border-emerald-400/50 rounded-full min-w-[3.5rem] h-[3.5rem] flex items-center justify-center font-black text-3xl shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+                    <span id="displayDay">1</span>
+                </div>
+            </div>
+
+            <div id="displayStatus" class="mt-3 text-lg font-bold text-blue-400 animate-pulse bg-blue-900/20 px-5 py-1.5 rounded-full border border-blue-800/30">جاري التحديث السحابي والمحلي...</div>
+        </header>
+
+        <!-- منطقة عرض الصناديق الاستثمارية -->
+        <main class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-6xl mb-6">
+            <!-- الصندوق الآمن -->
+            <div class="relative bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-5 pt-6 overflow-hidden shadow-lg hover:shadow-blue-900/20 transition-all duration-300 group">
+                <div class="absolute top-0 left-0 bg-blue-500/20 text-blue-400 border-b border-r border-blue-500/30 text-[11px] px-4 py-1.5 rounded-br-xl font-bold z-20 backdrop-blur-sm">أمان عالي</div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl group-hover:bg-blue-500/20 transition-all"></div>
+                
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 shadow-inner">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-0.5">الدرع المالي</h2>
+                            <p class="text-xs text-slate-400 leading-tight">نمو بطيء ومستقر. ممتاز لحفظ النقاط.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex flex-col items-center justify-center relative z-10 w-full text-center">
+                    <div class="text-[12px] text-slate-400 mb-2 font-bold tracking-wider">نتيجة اليوم</div>
+                    <div id="resultSafe" class="text-4xl md:text-5xl font-black font-mono text-slate-600 leading-none">؟%</div>
+                </div>
+            </div>
+
+            <!-- الصندوق المتوازن -->
+            <div class="relative bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-5 pt-6 overflow-hidden shadow-lg hover:shadow-purple-900/20 transition-all duration-300 group">
+                <div class="absolute top-0 left-0 bg-purple-500/20 text-purple-400 border-b border-r border-purple-500/30 text-[11px] px-4 py-1.5 rounded-br-xl font-bold z-20 backdrop-blur-sm">متوازن</div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl group-hover:bg-purple-500/20 transition-all"></div>
+                
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 shadow-inner">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-0.5">مسار النمو</h2>
+                            <p class="text-xs text-slate-400 leading-tight">توازن بين المخاطرة والعوائد الجيدة.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex flex-col items-center justify-center relative z-10 w-full text-center">
+                    <div class="text-[12px] text-slate-400 mb-2 font-bold tracking-wider">نتيجة اليوم</div>
+                    <div id="resultBalanced" class="text-4xl md:text-5xl font-black font-mono text-slate-600 leading-none">؟%</div>
+                </div>
+            </div>
+
+            <!-- الصندوق المغامر -->
+            <div class="relative bg-slate-800/60 backdrop-blur-md border border-slate-700/80 rounded-2xl p-5 pt-6 overflow-hidden shadow-lg hover:shadow-orange-900/20 transition-all duration-300 group">
+                <div class="absolute top-0 left-0 bg-orange-500/20 text-orange-400 border-b border-r border-orange-500/30 text-[11px] px-4 py-1.5 rounded-br-xl font-bold z-20 backdrop-blur-sm">عالي المخاطرة</div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl group-hover:bg-orange-500/20 transition-all"></div>
+                
+                <div class="flex justify-between items-start mb-2 relative z-10">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 shadow-inner">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-0.5">المغامر</h2>
+                            <p class="text-xs text-slate-400 leading-tight">أرباح خيالية أو خسائر فادحة.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-slate-700/50 flex flex-col items-center justify-center relative z-10 w-full text-center">
+                    <div class="text-[12px] text-slate-400 mb-2 font-bold tracking-wider">نتيجة اليوم</div>
+                    <div id="resultRisky" class="text-4xl md:text-5xl font-black font-mono text-slate-600 leading-none">؟%</div>
+                </div>
+            </div>
+        </main>
+
+        <!-- زر البدء في الشاشة الرئيسية -->
+        <div id="startActionWrapper" class="fixed top-5 right-5 z-50 hidden">
+            <button onclick="processMarketResults()" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-xl py-2 px-8 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] border-2 border-emerald-400 transition-all transform hover:scale-105 active:scale-95 animate-pulse flex items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                بدأ
+            </button>
+        </div>
+
+        <!-- شريط سوق الأسهم (Ticker) -->
+        <div class="w-full max-w-5xl rounded-lg overflow-hidden mb-4">
+            <div class="ticker-wrap rounded-lg">
+                <div id="marketTicker" class="ticker-content font-bold text-lg tracking-wider text-slate-300" dir="ltr">
+                    --- جاري انتظار البيانات السحابية ---
+                </div>
+            </div>
+        </div>
+
+        <!-- لوحة المتصدرين -->
+        <div class="w-full max-w-5xl bg-[#0a0a0a] rounded-xl border border-slate-700 overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.8)] mb-20">
+            <div class="bg-slate-900 p-3 text-center border-b border-slate-700 flex justify-between items-center px-6">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    شاشة التداول المباشرة
+                </h2>
+                <div class="text-xs text-slate-500 font-mono">بيانات السوق المباشرة</div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-white min-w-[700px]">
+                    <thead class="bg-slate-800 text-slate-400 text-sm uppercase tracking-wider border-b-2 border-slate-600">
+                        <tr>
+                            <th class="py-3 px-4 w-16 text-center">#</th>
+                            <th class="py-3 px-4">السهم (المستثمر)</th>
+                            <th class="py-3 px-4 text-left">السعر (الرصيد)</th>
+                            <th class="py-3 px-4 text-left">التغير</th>
+                            <th class="py-3 px-4 text-left">% النسبة</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardList" class="font-mono"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 2. لوحة الإدخال الخارجية (للأيباد/المساعد) -->
+    <!-- ========================================== -->
+    <div id="entryView" class="w-full max-w-5xl hidden flex-col gap-6 mb-20">
+        <div class="flex justify-between items-center bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div>
+                <h2 class="text-3xl font-black text-white text-center md:text-right">أداة الإدخال السحابية</h2>
+                <p class="text-slate-400 mt-2 text-sm text-center md:text-right">تتم مزامنة أي تعديل هنا محلياً ومباشرة مع الجهاز الرئيسي للمشرف عبر السحابة.</p>
+            </div>
+            <div class="hidden md:flex items-center gap-3">
+                <span class="bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-1.5">
+                    اليوم: <span id="entryDay" class="text-lg mx-1">1</span>
+                </span>
+            </div>
+        </div>
+
+        <div id="entryClosedMessage" class="hidden bg-amber-900/40 border border-amber-600/50 text-amber-400 p-6 rounded-2xl text-center shadow-lg">
+            <h3 class="text-2xl font-bold mb-2">السوق مغلق حالياً 🔒</h3>
+            <p>يتم عرض النتائج حالياً في الشاشة الرئيسية. يرجى انتظار المشرف لبدء يوم جديد.</p>
+        </div>
+
+        <div id="entryTableContainer" class="bg-slate-800 rounded-2xl border border-slate-700 flex flex-col shadow-xl">
+            <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">توزيع المحافظ الاستثمارية</h3>
+            </div>
+            <div class="p-4 overflow-x-auto">
+                <table class="w-full text-right min-w-[700px]">
+                    <thead>
+                        <tr class="text-slate-400 border-b border-slate-700 text-sm">
+                            <th class="pb-3 pr-2">المستثمر</th>
+                            <th class="pb-3 text-slate-500">إجمالي الرصيد</th>
+                            <th class="pb-3 text-blue-400">الدرع (آمن)</th>
+                            <th class="pb-3 text-purple-400">النمو (متوازن)</th>
+                            <th class="pb-3 text-orange-400">المغامر (خطر)</th>
+                            <th class="pb-3 text-emerald-400">كاش متبقي للتوزيع</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 3. لوحة الإدارة الشاملة (للمشرف) -->
+    <!-- ========================================== -->
+    <div id="adminView" class="w-full max-w-6xl hidden flex-col gap-6 mb-20">
+        <div class="flex justify-between items-center bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div>
+                <h2 class="text-3xl font-black text-white">لوحة تحكم الإدارة الشاملة</h2>
+                <div class="flex items-center gap-3 mt-3">
+                    <span class="bg-emerald-900/30 text-emerald-400 border border-emerald-800/50 px-3 py-1 rounded-lg text-sm font-bold flex items-center gap-1.5">
+                        اليوم: <span id="adminDay" class="text-lg mx-1">1</span>
+                    </span>
+                    <span class="text-slate-600">|</span>
+                    <span class="text-sm font-bold text-slate-400 bg-slate-900/50 px-3 py-1 rounded-lg border border-slate-700/50">الحالة: <span id="adminStatusText" class="text-blue-400 ml-1">إدخال الاستثمارات</span></span>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="startNewDay()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg font-bold transition">بدء يوم جديد</button>
+                <button onclick="resetGame()" class="bg-red-900/50 hover:bg-red-800/80 text-red-300 px-4 py-2 rounded-lg font-bold transition border border-red-800">تصفير اللعبة</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="flex flex-col gap-6 lg:col-span-1">
+                <!-- إدارة الطلاب -->
+                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                    <h3 class="text-xl font-bold text-white mb-4">إضافة مستثمرين</h3>
+                    <div class="space-y-3">
+                        <textarea id="newStudentName" placeholder="الأسماء (كل اسم في سطر، أو افصل بينهم بفاصلة)" rows="3" class="w-full p-3 rounded-lg bg-slate-900 text-white border border-slate-600 focus:ring-2 focus:ring-emerald-500 outline-none resize-none"></textarea>
+                        <input type="number" step="1" id="newStudentBalance" placeholder="الرصيد الافتراضي للجميع" value="1000" class="w-full p-3 rounded-lg bg-slate-900 text-white border border-slate-600 focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <button onclick="addStudent()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg transition">إضافة الكل</button>
+                    </div>
+                </div>
+                <!-- إضافة أموال للمحددين -->
+                <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700">
+                    <h3 class="text-xl font-bold text-blue-400 mb-2 flex items-center gap-2">توزيع أموال جماعي</h3>
+                    <div class="space-y-3">
+                        <input type="number" step="1" id="bulkAmount" placeholder="المبلغ (مثال: 500 أو -200)" class="w-full p-3 rounded-lg bg-slate-900 text-white border border-slate-600 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <button onclick="applyBulkFunds()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition">تطبيق عالمحددين</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- جدول الاستثمارات للإدارة -->
+            <div class="bg-slate-800 rounded-2xl border border-slate-700 lg:col-span-3 flex flex-col">
+                <div class="p-4 border-b border-slate-700 bg-slate-800/50 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white">توزيع الاستثمارات والتعديل</h3>
+                </div>
+                <div class="p-4 overflow-x-auto">
+                    <table class="w-full text-right min-w-[750px]">
+                        <thead>
+                            <tr class="text-slate-400 border-b border-slate-700">
+                                <th class="pb-3 px-2 text-center w-12"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)" title="تحديد الكل" class="w-4 h-4 accent-emerald-500 cursor-pointer"></th>
+                                <th class="pb-3 pr-2">الاسم</th>
+                                <th class="pb-3 text-emerald-400">إجمالي الثروة</th>
+                                <th class="pb-3 text-blue-400">الدرع (آمن)</th>
+                                <th class="pb-3 text-purple-400">النمو (متوازن)</th>
+                                <th class="pb-3 text-orange-400">المغامر (خطر)</th>
+                                <th class="pb-3">كاش غير مستثمر</th>
+                                <th class="pb-3 text-center">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="investmentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- تحديد أداء السوق -->
+        <div class="bg-slate-800 rounded-3xl p-6 border-2 border-rose-900/50 shadow-2xl relative overflow-hidden mt-2">
+            <h2 class="text-2xl font-black text-white mb-6 text-center border-b border-slate-700 pb-4 mt-2 flex items-center justify-center gap-2">
+                تحديد أداء السوق لليوم <span id="adminMarketDay" class="bg-emerald-500 text-white rounded-md px-3 py-0.5 text-xl shadow-md">1</span> <span class="text-slate-400 text-lg font-normal">(نطاق عشوائي)</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <!-- الصندوق الآمن -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-blue-900/50 flex flex-col gap-3">
+                    <h3 class="text-blue-400 font-bold mb-1 text-center border-b border-blue-900/50 pb-2 text-sm">الدرع المالي (آمن)</h3>
+                    <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
+                        <span class="block text-emerald-400 text-[11px] mb-2 text-center font-bold">نطاق الربح الموجب (+)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل ربح%</label><input type="number" id="safeMinP" step="0.1" value="1" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى ربح%</label><input type="number" id="safeMaxP" step="0.1" value="3" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                    <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
+                        <span class="block text-red-400 text-[11px] mb-2 text-center font-bold">نطاق الخسارة السالب (-)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل خسارة%</label><input type="number" id="safeMinL" step="0.1" value="0.5" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى خسارة%</label><input type="number" id="safeMaxL" step="0.1" value="2" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- الصندوق المتوازن -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-purple-900/50 flex flex-col gap-3">
+                    <h3 class="text-purple-400 font-bold mb-1 text-center border-b border-purple-900/50 pb-2 text-sm">مسار النمو (متوازن)</h3>
+                    <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
+                        <span class="block text-emerald-400 text-[11px] mb-2 text-center font-bold">نطاق الربح الموجب (+)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل ربح%</label><input type="number" id="balMinP" step="0.1" value="4" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى ربح%</label><input type="number" id="balMaxP" step="0.1" value="8" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                    <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
+                        <span class="block text-red-400 text-[11px] mb-2 text-center font-bold">نطاق الخسارة السالب (-)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل خسارة%</label><input type="number" id="balMinL" step="0.1" value="2" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى خسارة%</label><input type="number" id="balMaxL" step="0.1" value="6" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- الصندوق المغامر -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-orange-900/50 flex flex-col gap-3">
+                    <h3 class="text-orange-400 font-bold mb-1 text-center border-b border-orange-900/50 pb-2 text-sm">المغامر (خطر)</h3>
+                    <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
+                        <span class="block text-emerald-400 text-[11px] mb-2 text-center font-bold">نطاق الربح الموجب (+)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل ربح%</label><input type="number" id="riskMinP" step="0.1" value="10" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى ربح%</label><input type="number" id="riskMaxP" step="0.1" value="25" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                    <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
+                        <span class="block text-red-400 text-[11px] mb-2 text-center font-bold">نطاق الخسارة السالب (-)</span>
+                        <div class="flex gap-2">
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقل خسارة%</label><input type="number" id="riskMinL" step="0.1" value="10" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[10px] mb-1 text-center">أقصى خسارة%</label><input type="number" id="riskMaxL" step="0.1" value="20" class="w-full p-2 rounded bg-slate-800 text-white border border-slate-600 text-center font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لعرض النتائج التي تم توليدها للمدير -->
+            <div id="adminGeneratedResults" class="hidden grid-cols-3 gap-4 mb-6 text-center">
+                <div class="bg-slate-900 p-3 rounded-lg border border-blue-900/50"><span class="block text-slate-400 text-xs">الدرع المالي (آمن)</span><span id="adminResSafe" class="font-bold text-blue-400 text-lg">0%</span></div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-purple-900/50"><span class="block text-slate-400 text-xs">مسار النمو (متوازن)</span><span id="adminResBal" class="font-bold text-purple-400 text-lg">0%</span></div>
+                <div class="bg-slate-900 p-3 rounded-lg border border-orange-900/50"><span class="block text-slate-400 text-xs">المغامر (خطر)</span><span id="adminResRisk" class="font-bold text-orange-400 text-lg">0%</span></div>
+            </div>
+
+            <p class="text-center text-emerald-400 font-bold mt-4 text-lg">👉 انتقل إلى "شاشة العرض" واضغط على الزر الأخضر الكبير "بدأ" لتشغيل السوق وتطبيق النسب</p>
+        </div>
+    </div>
+
+    <!-- نافذة الإشعارات المؤقتة (Toast) -->
+    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 bg-slate-800 border-b-4 border-amber-500 text-white px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3">
+        <span id="toastMessage" class="font-bold">رسالة تنبيه</span>
+    </div>
+
+    <!-- كود JavaScript للتحكم باللعبة (التزامن السحابي والمحلي) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // هيكل البيانات الأساسي
+        let appData = {
+            day: 1,
+            status: 'setup',
+            marketResults: { safe: null, balanced: null, risky: null },
+            students: [],
+            investments: {} 
+        };
+
+        let db, docRef, isCloudSynced = false, currentUser = null;
+        let saveTimeout;
+
+        // تهيئة النظام السحابي والمحلي
+        async function initApp() {
+            const statusText = document.getElementById('connectionText');
+            const pingDot = document.getElementById('pingDot');
+            const solidDot = document.getElementById('solidDot');
+
+            // 1. القراءة من الحفظ المحلي أولاً (لكي يعمل التطبيق فوراً بدون انتظار الإنترنت)
+            const localSaved = localStorage.getItem('investment_game_local');
+            if (localSaved) {
+                try {
+                    appData = JSON.parse(localSaved);
+                } catch(e) { console.error("Error parsing local data", e); }
+            }
+
+            // 2. تفعيل السحابة ببياناتك الخاصة التي قمت بتوفيرها
+            const hasFirebase = true;
+
+            if (hasFirebase) {
+                try {
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyDtt8R46OEKsJPhTPyfP9XVy1y8RzAFcwA",
+                        authDomain: "boxshme.firebaseapp.com",
+                        projectId: "boxshme",
+                        storageBucket: "boxshme.firebasestorage.app",
+                        messagingSenderId: "53274551646",
+                        appId: "1:53274551646:web:1b9ca5fbc1774083e29bcf"
+                    };
+                    
+                    const appId = "investment_game_app"; 
+                    
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    db = getFirestore(app);
+                    
+                    const initAuth = async () => {
+                        // نستخدم الدخول المجهول مباشرة لأننا نعتمد على مشروعك الخاص
+                        await signInAnonymously(auth);
+                    };
+                    
+                    await initAuth();
+
+                    onAuthStateChanged(auth, (user) => {
+                        currentUser = user;
+                        if (user) {
+                            docRef = doc(db, 'artifacts', appId, 'public', 'data', 'gamestate', 'main');
+                            isCloudSynced = true;
+
+                            statusText.textContent = "متصل بالسحابة ومحفوظ محلياً ☁️";
+                            statusText.className = "text-emerald-400";
+                            pingDot.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+                            solidDot.className = "relative inline-flex rounded-full h-3 w-3 bg-emerald-500";
+
+                            // الاستماع للتغييرات من الأجهزة الأخرى
+                            onSnapshot(docRef, (snap) => {
+                                if (snap.exists()) {
+                                    const newData = snap.data();
+                                    // منع إعادة الرسم المزعجة إذا كان التغيير من نفس الجهاز
+                                    if(JSON.stringify(newData) !== JSON.stringify(appData)){
+                                        appData = newData;
+                                        // تحديث الحفظ المحلي ليتطابق مع السحابة دائماً
+                                        localStorage.setItem('investment_game_local', JSON.stringify(appData));
+                                        renderAll();
+                                    }
+                                } else {
+                                    // أول مرة يتم تشغيل التطبيق على السحابة، نقوم برفع النسخة المحلية
+                                    window.saveData(true);
+                                }
+                            }, (error) => {
+                                console.error("Firebase Sync Permission Error:", error);
+                                fallbackToLocal(); // إذا تم رفض الصلاحية، ننتقل فوراً للعمل المحلي
+                            });
+                        } else {
+                            isCloudSynced = false;
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Failed to connect to Firebase", error);
+                    fallbackToLocal();
+                }
+            } else {
+                fallbackToLocal();
+            }
+            
+            renderAll();
+            // الوضع الافتراضي عند فتح الصفحة
+            window.switchView('screen');
+        }
+
+        function fallbackToLocal() {
+            const statusText = document.getElementById('connectionText');
+            const pingDot = document.getElementById('pingDot');
+            const solidDot = document.getElementById('solidDot');
+            
+            isCloudSynced = false;
+            statusText.textContent = "تخزين محلي فقط (يعمل بدون إنترنت)";
+            statusText.className = "text-amber-400";
+            pingDot.className = "hidden";
+            solidDot.className = "relative inline-flex rounded-full h-3 w-3 bg-slate-500";
+
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'investment_game_local') {
+                    appData = JSON.parse(localStorage.getItem('investment_game_local'));
+                    renderAll();
+                }
+            });
+        }
+
+        // دالة الحفظ المركزية (تحفظ محلياً دائماً + سحابياً إن وُجد)
+        window.saveData = (silent = false) => {
+            // 1. الحفظ المحلي المضمون دائماً
+            localStorage.setItem('investment_game_local', JSON.stringify(appData));
+
+            // 2. الحفظ السحابي
+            if (isCloudSynced && docRef && currentUser) {
+                // استخدام Debounce لعدم إرهاق السيرفر عند الكتابة السريعة
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(() => {
+                    setDoc(docRef, appData).catch(err => console.error("Firebase Write Error:", err));
+                }, 400); // إرسال للسحابة بعد التوقف عن الكتابة بنصف ثانية
+            }
+            
+            if (!silent) renderAll();
+        };
+
+        // =====================================
+        // ربط الدوال بالواجهة
+        // =====================================
+
+        window.switchView = (view) => {
+            const screenView = document.getElementById('screenView');
+            const entryView = document.getElementById('entryView');
+            const adminView = document.getElementById('adminView');
+            
+            const btnScreen = document.getElementById('btnViewScreen');
+            const btnEntry = document.getElementById('btnViewEntry');
+            const btnAdmin = document.getElementById('btnViewAdmin');
+
+            screenView.classList.replace('flex', 'hidden');
+            entryView.classList.replace('flex', 'hidden');
+            adminView.classList.replace('flex', 'hidden');
+
+            btnScreen.className = "px-4 py-2 rounded-full font-bold transition-all text-slate-400 hover:text-white";
+            btnEntry.className = "px-4 py-2 rounded-full font-bold transition-all text-slate-400 hover:text-white";
+            btnAdmin.className = "px-4 py-2 rounded-full font-bold transition-all text-slate-400 hover:text-white";
+
+            if (view === 'screen') {
+                screenView.classList.replace('hidden', 'flex');
+                btnScreen.className = "px-4 py-2 rounded-full font-bold transition-all bg-blue-600 text-white shadow-lg";
+            } else if (view === 'entry') {
+                entryView.classList.replace('hidden', 'flex');
+                btnEntry.className = "px-4 py-2 rounded-full font-bold transition-all bg-emerald-600 text-white shadow-lg";
+            } else if (view === 'admin') {
+                adminView.classList.replace('hidden', 'flex');
+                btnAdmin.className = "px-4 py-2 rounded-full font-bold transition-all bg-purple-600 text-white shadow-lg";
+            }
+            
+            renderAll();
+        };
+
+        function renderAll() {
+            renderAdmin();
+            renderEntry();
+            renderScreen();
+        }
+
+        // لوحة الإدخال فقط
+        function renderEntry() {
+            document.getElementById('entryDay').textContent = appData.day;
+            const tableContainer = document.getElementById('entryTableContainer');
+            const closedMsg = document.getElementById('entryClosedMessage');
+            const tbody = document.getElementById('entryTableBody');
+            
+            if (appData.status === 'results') {
+                tableContainer.classList.add('hidden');
+                closedMsg.classList.remove('hidden');
+                return;
+            } else {
+                tableContainer.classList.remove('hidden');
+                closedMsg.classList.add('hidden');
+            }
+
+            tbody.innerHTML = '';
+            if (appData.students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-slate-500">في انتظار إضافة المستثمرين من قبل المشرف...</td></tr>`;
+            }
+
+            appData.students.forEach(student => {
+                const inv = appData.investments[student.id] || { safe: 0, balanced: 0, risky: 0 };
+                const safeVal = Math.round(inv.safe) || 0;
+                const balVal = Math.round(inv.balanced) || 0;
+                const riskVal = Math.round(inv.risky) || 0;
+                const balanceVal = Math.round(student.balance);
+                
+                const totalInvested = safeVal + balVal + riskVal;
+                const remaining = Math.round(balanceVal - totalInvested);
+                const isOver = remaining < 0;
+                
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-700/50 hover:bg-slate-700/20";
+                
+                tr.innerHTML = `
+                    <td class="py-3 pr-2 font-bold text-white text-lg">${student.name}</td>
+                    <td class="py-3 text-slate-400 font-bold text-lg">${balanceVal}</td>
+                    <td class="py-3"><input type="number" id="entry_inp_${student.id}_safe" step="1" min="0" value="${inv.safe > 0 ? safeVal : ''}" oninput="window.handleInput('${student.id}', 'safe', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-blue-500 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="entry_inp_${student.id}_balanced" step="1" min="0" value="${inv.balanced > 0 ? balVal : ''}" oninput="window.handleInput('${student.id}', 'balanced', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-purple-500 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="entry_inp_${student.id}_risky" step="1" min="0" value="${inv.risky > 0 ? riskVal : ''}" oninput="window.handleInput('${student.id}', 'risky', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-orange-500 outline-none transition-colors"></td>
+                    <td class="py-3">
+                        <input type="number" id="entry_inpCash_${student.id}" step="1" value="${remaining}" oninput="window.handleCashInput('${student.id}', this.value)" class="w-24 p-2 bg-slate-900 border ${isOver ? 'border-red-500 text-red-500' : 'border-emerald-600 text-emerald-400'} font-bold rounded text-center focus:border-emerald-400 outline-none transition-colors">
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // لوحة المشرف الشاملة
+        function renderAdmin() {
+            document.getElementById('adminDay').textContent = appData.day;
+            document.getElementById('adminMarketDay').textContent = appData.day;
+            
+            const statusEl = document.getElementById('adminStatusText');
+            if (appData.status === 'setup') {
+                statusEl.textContent = 'إدخال الاستثمارات';
+                statusEl.className = 'text-blue-400 ml-1';
+            } else {
+                statusEl.textContent = 'تم عرض النتائج';
+                statusEl.className = 'text-emerald-400 ml-1';
+            }
+
+            const tbody = document.getElementById('investmentsTableBody');
+            tbody.innerHTML = '';
+            
+            if (appData.students.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500">لا يوجد مستثمرين.</td></tr>`;
+            }
+
+            appData.students.forEach(student => {
+                const inv = appData.investments[student.id] || { safe: 0, balanced: 0, risky: 0 };
+                const safeVal = Math.round(inv.safe) || 0;
+                const balVal = Math.round(inv.balanced) || 0;
+                const riskVal = Math.round(inv.risky) || 0;
+                const balanceVal = Math.round(student.balance);
+                
+                const totalInvested = safeVal + balVal + riskVal;
+                const remaining = Math.round(balanceVal - totalInvested);
+                const isOver = remaining < 0;
+                
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-700/50 hover:bg-slate-700/20";
+                const disabledStr = appData.status === 'results' ? 'disabled' : '';
+
+                tr.innerHTML = `
+                    <td class="py-3 px-2 text-center"><input type="checkbox" class="student-select w-4 h-4 accent-emerald-500 cursor-pointer" value="${student.id}"></td>
+                    <td class="py-3 pr-2 font-bold text-white text-lg">${student.name}</td>
+                    <td class="py-3"><input type="number" id="admin_inpBal_${student.id}" step="1" min="0" ${disabledStr} value="${balanceVal}" oninput="window.handleBalanceInput('${student.id}', this.value)" class="w-24 p-2 bg-emerald-900/20 border border-emerald-800/50 rounded text-center text-emerald-400 font-bold focus:border-emerald-500 focus:bg-slate-900 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="admin_inp_${student.id}_safe" step="1" min="0" ${disabledStr} value="${inv.safe > 0 ? safeVal : ''}" oninput="window.handleInput('${student.id}', 'safe', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-blue-500 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="admin_inp_${student.id}_balanced" step="1" min="0" ${disabledStr} value="${inv.balanced > 0 ? balVal : ''}" oninput="window.handleInput('${student.id}', 'balanced', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-purple-500 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="admin_inp_${student.id}_risky" step="1" min="0" ${disabledStr} value="${inv.risky > 0 ? riskVal : ''}" oninput="window.handleInput('${student.id}', 'risky', this.value)" class="w-20 p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-orange-500 outline-none transition-colors"></td>
+                    <td class="py-3"><input type="number" id="admin_inpCash_${student.id}" step="1" ${disabledStr} value="${remaining}" oninput="window.handleCashInput('${student.id}', this.value)" class="w-24 p-2 bg-slate-900 border ${isOver ? 'border-red-500 text-red-500' : 'border-slate-600 text-slate-300'} font-bold rounded text-center focus:border-emerald-500 outline-none transition-colors"></td>
+                    <td class="py-3 text-center flex justify-center gap-2">
+                        <button onclick="window.deleteStudent('${student.id}')" title="حذف المستثمر" class="text-red-500 hover:text-red-400 p-2 bg-slate-800 rounded transition-colors mt-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const adminResultsEl = document.getElementById('adminGeneratedResults');
+            if (appData.status === 'results') {
+                adminResultsEl.classList.remove('hidden');
+                adminResultsEl.classList.add('grid');
+                document.getElementById('adminResSafe').textContent = (appData.marketResults.safe > 0 ? '+' : '') + appData.marketResults.safe + '%';
+                document.getElementById('adminResBal').textContent = (appData.marketResults.balanced > 0 ? '+' : '') + appData.marketResults.balanced + '%';
+                document.getElementById('adminResRisk').textContent = (appData.marketResults.risky > 0 ? '+' : '') + appData.marketResults.risky + '%';
+            } else {
+                adminResultsEl.classList.add('hidden');
+                adminResultsEl.classList.remove('grid');
+            }
+        }
+
+        // شاشة العرض الرئيسية
+        function renderScreen() {
+            document.getElementById('displayDay').textContent = appData.day;
+            const statusEl = document.getElementById('displayStatus');
+            const startWrapper = document.getElementById('startActionWrapper');
+
+            if(appData.status === 'setup') {
+                if(startWrapper) startWrapper.classList.remove('hidden');
+                statusEl.textContent = 'جاري توزيع الاستثمارات...';
+                statusEl.className = 'mt-3 text-lg font-bold text-blue-400 animate-pulse bg-blue-900/20 px-5 py-1.5 rounded-full border border-blue-800/30';
+                
+                document.getElementById('resultSafe').innerHTML = '؟%';
+                document.getElementById('resultBalanced').innerHTML = '؟%';
+                document.getElementById('resultRisky').innerHTML = '؟%';
+            } else {
+                if(startWrapper) startWrapper.classList.add('hidden');
+                statusEl.textContent = 'نتائج اليوم!';
+                statusEl.className = 'mt-3 text-lg font-bold text-emerald-400 bg-emerald-900/20 px-5 py-1.5 rounded-full border border-emerald-800/30';
+                
+                const drawResult = (val) => {
+                    if(val > 0) return `<span class="text-emerald-400" dir="ltr">+${val}%</span>`;
+                    if(val < 0) return `<span class="text-red-400" dir="ltr">${val}%</span>`;
+                    return `<span class="text-slate-400" dir="ltr">0%</span>`;
+                };
+
+                document.getElementById('resultSafe').innerHTML = drawResult(appData.marketResults.safe);
+                document.getElementById('resultBalanced').innerHTML = drawResult(appData.marketResults.balanced);
+                document.getElementById('resultRisky').innerHTML = drawResult(appData.marketResults.risky);
+            }
+
+            const tickerEl = document.getElementById('marketTicker');
+            if(appData.status === 'setup') {
+                tickerEl.innerHTML = `<span class="text-slate-500">السوق مغلق - في انتظار نتائج اليوم ${appData.day}</span>`;
+                tickerEl.classList.remove('animate-pulse');
+            } else {
+                tickerEl.classList.add('animate-pulse');
+                const s = appData.marketResults.safe;
+                const b = appData.marketResults.balanced;
+                const r = appData.marketResults.risky;
+                const formatTicker = (name, val) => `<span class="mx-4 text-slate-200">${name}: <span class="${val > 0 ? 'text-emerald-400' : (val < 0 ? 'text-red-400' : 'text-slate-400')}">${val > 0 ? '+' : ''}${val}% ${val > 0 ? '▲' : (val < 0 ? '▼' : '▬')}</span></span>`;
+                tickerEl.innerHTML = formatTicker('الدرع المالي', s) + ' | ' + formatTicker('مسار النمو', b) + ' | ' + formatTicker('المغامر', r) + ` | <span class="mx-4 text-amber-400"> تحديث السوق لليوم ${appData.day} </span>`;
+            }
+
+            const sortedStudents = [...appData.students].sort((a, b) => b.balance - a.balance);
+            const listEl = document.getElementById('leaderboardList');
+            listEl.innerHTML = '';
+            
+            if(sortedStudents.length === 0) {
+                listEl.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 py-8">في انتظار إدراج الأسهم (الطلاب)...</td></tr>';
+                return;
+            }
+
+            sortedStudents.forEach((student, index) => {
+                const diff = Math.round(student.lastDiff || 0);
+                const isPos = diff > 0;
+                const isNeg = diff < 0;
+                let percentChange = 0;
+                const oldBalance = Math.round(student.balance - diff);
+                if(oldBalance > 0 && diff !== 0) percentChange = (diff / oldBalance) * 100;
+
+                const colorClass = isPos ? 'text-emerald-400' : (isNeg ? 'text-red-500' : 'text-slate-400');
+                const bgFlashClass = appData.status === 'results' && diff !== 0 ? (isPos ? 'stock-flash-up' : 'stock-flash-down') : '';
+                const arrow = isPos ? '▲' : (isNeg ? '▼' : '▬');
+                const sign = isPos ? '+' : '';
+
+                let rankIcon = `<span class="text-slate-500 font-bold">${index + 1}</span>`;
+                if(index === 0) rankIcon = '👑';
+                else if(index === 1) rankIcon = '<span class="text-slate-300 font-black">2</span>';
+                else if(index === 2) rankIcon = '<span class="text-amber-600 font-black">3</span>';
+
+                listEl.innerHTML += `
+                    <tr class="border-b border-slate-800 hover:bg-slate-800/40 transition-colors ${bgFlashClass}">
+                        <td class="py-4 px-4 text-center">${rankIcon}</td>
+                        <td class="py-4 px-4 font-bold text-xl text-slate-100">${student.name}</td>
+                        <td class="py-4 px-4 text-left font-black text-2xl text-white">${Math.round(student.balance).toLocaleString()}</td>
+                        <td class="py-4 px-4 text-left font-bold text-lg ${colorClass}" dir="ltr">${sign}${diff.toLocaleString()}</td>
+                        <td class="py-4 px-4 text-left font-bold text-lg ${colorClass} bg-slate-900/30" dir="ltr">${sign}${percentChange.toFixed(1)}% ${arrow}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // =====================================
+        // تفاعلات المستخدم والإدخال اللحظي
+        // =====================================
+
+        window.addStudent = () => {
+            const nameInput = document.getElementById('newStudentName');
+            const balInput = document.getElementById('newStudentBalance');
+            const rawNames = nameInput.value.trim();
+            if(!rawNames) return window.showToast('يرجى إدخال اسم مستثمر واحد على الأقل', 'error');
+            
+            const namesList = rawNames.split(/[\n,]+/).map(n => n.trim()).filter(n => n !== '');
+            const defaultBalance = Math.round(parseFloat(balInput.value)) || 1000;
+            
+            namesList.forEach((name, index) => {
+                const newId = 'stu_' + Date.now() + '_' + index;
+                appData.students.push({ id: newId, name: name, balance: defaultBalance, lastDiff: 0 });
+                appData.investments[newId] = { safe: 0, balanced: 0, risky: 0 };
+            });
+            
+            nameInput.value = '';
+            window.saveData();
+            window.showToast(`تمت إضافة ${namesList.length} مستثمر بنجاح`, 'success');
+        };
+
+        window.deleteStudent = (id) => {
+            if(confirm('هل أنت متأكد من حذف هذا المستثمر؟')) {
+                appData.students = appData.students.filter(s => s.id !== id);
+                delete appData.investments[id];
+                window.saveData();
+            }
+        };
+
+        window.toggleSelectAll = (isChecked) => {
+            document.querySelectorAll('.student-select').forEach(cb => cb.checked = isChecked);
+        };
+
+        window.applyBulkFunds = () => {
+            const amountInput = document.getElementById('bulkAmount').value;
+            if (amountInput === '') return window.showToast('يرجى إدخال المبلغ أولاً', 'error');
+            
+            const amount = Math.round(parseFloat(amountInput));
+            if (isNaN(amount)) return window.showToast('المبلغ المدخل غير صحيح', 'error');
+
+            const selectedCheckboxes = document.querySelectorAll('.student-select:checked');
+            if (selectedCheckboxes.length === 0) return window.showToast('يرجى تحديد مستثمر', 'error');
+
+            let updatedCount = 0;
+            selectedCheckboxes.forEach(cb => {
+                const student = appData.students.find(s => s.id === cb.value);
+                if (student) { student.balance += amount; updatedCount++; }
+            });
+
+            if (updatedCount > 0) {
+                window.saveData(); 
+                window.showToast(`تم ${amount >= 0 ? 'إضافة' : 'خصم'} ${Math.abs(amount)} لـ ${updatedCount} مستثمر`, 'success');
+                document.getElementById('bulkAmount').value = '';
+                document.getElementById('selectAllCheckbox').checked = false;
+            }
+        };
+
+        // تحديث الحقول ديناميكياً بدون إعادة بناء الجدول بالكامل
+        function updateUIInputs(studentId, func) { ['admin_', 'entry_'].forEach(func); }
+
+        window.handleBalanceInput = (studentId, value) => {
+            if(appData.status === 'results') return;
+            const student = appData.students.find(s => s.id === studentId);
+            if(!student) return;
+            student.balance = value === '' ? 0 : Math.round(parseFloat(value));
+            window.saveData(true); // حفظ صامت
+            window.updateRemainingUI(studentId);
+        };
+
+        window.handleInput = (studentId, fundType, value) => {
+            if(appData.status === 'results') return;
+            const num = value === '' ? 0 : Math.round(parseFloat(value));
+            if(!appData.investments[studentId]) appData.investments[studentId] = { safe:0, balanced:0, risky:0 };
+            appData.investments[studentId][fundType] = num;
+            window.saveData(true); // حفظ صامت
+            window.updateRemainingUI(studentId);
+        };
+
+        window.handleCashInput = (studentId, value) => {
+            if(appData.status === 'results') return;
+            const student = appData.students.find(s => s.id === studentId);
+            if(!student) return;
+
+            const newCash = value === '' ? 0 : Math.round(parseFloat(value));
+            const inv = appData.investments[studentId] || {safe:0, balanced:0, risky:0};
+            const totalInv = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
+            
+            student.balance = Math.round(totalInv + newCash);
+            window.saveData(true); // حفظ صامت
+            
+            const balInp = document.getElementById(`admin_inpBal_${studentId}`);
+            if(balInp) balInp.value = Math.round(student.balance);
+            
+            window.updateRemainingUI(studentId, true); // true = override cash calculation
+        };
+
+        window.updateRemainingUI = (studentId, ignoreCashField = false) => {
+            const student = appData.students.find(s => s.id === studentId);
+            if(!student) return;
+            const inv = appData.investments[studentId] || {safe:0, balanced:0, risky:0};
+            const total = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
+            const remaining = Math.round(student.balance - total);
+            const isOver = remaining < 0;
+            
+            updateUIInputs(studentId, (prefix) => {
+                if(!ignoreCashField) {
+                    const cashInp = document.getElementById(`${prefix}inpCash_${studentId}`);
+                    if(cashInp) {
+                        cashInp.value = Math.round(remaining);
+                        if(isOver) cashInp.className = `w-24 p-2 bg-slate-900 border border-red-500 text-red-500 font-bold rounded text-center outline-none transition-colors`;
+                        else cashInp.className = `w-24 p-2 bg-slate-900 border ${prefix === 'entry_' ? 'border-emerald-600 text-emerald-400' : 'border-slate-600 text-slate-300'} font-bold rounded text-center outline-none transition-colors`;
+                    }
+                }
+                
+                ['safe', 'balanced', 'risky'].forEach(f => {
+                    const inp = document.getElementById(`${prefix}inp_${studentId}_${f}`);
+                    if(inp) {
+                        if(isOver) { inp.classList.add('border-red-500'); inp.classList.remove('border-slate-600'); } 
+                        else { inp.classList.remove('border-red-500'); inp.classList.add('border-slate-600'); }
+                    }
+                });
+            });
+        };
+
+        // =====================================
+        // محرك تشغيل اللعبة
+        // =====================================
+
+        window.processMarketResults = () => {
+            const safeMinP = document.getElementById('safeMinP').value;
+            const safeMaxP = document.getElementById('safeMaxP').value;
+            const safeMinL = document.getElementById('safeMinL').value;
+            const safeMaxL = document.getElementById('safeMaxL').value;
+
+            const balMinP = document.getElementById('balMinP').value;
+            const balMaxP = document.getElementById('balMaxP').value;
+            const balMinL = document.getElementById('balMinL').value;
+            const balMaxL = document.getElementById('balMaxL').value;
+
+            const riskMinP = document.getElementById('riskMinP').value;
+            const riskMaxP = document.getElementById('riskMaxP').value;
+            const riskMinL = document.getElementById('riskMinL').value;
+            const riskMaxL = document.getElementById('riskMaxL').value;
+
+            if(!safeMinP || !safeMaxP || !safeMinL || !safeMaxL || !balMinP || !balMaxP || !balMinL || !balMaxL || !riskMinP || !riskMaxP || !riskMinL || !riskMaxL) {
+                return window.showToast('يجب إدخال جميع نسب الربح والخسارة لجميع الصناديق', 'error');
+            }
+
+            for(let s of appData.students) {
+                const inv = appData.investments[s.id] || {};
+                const total = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
+                if(total > Math.round(s.balance)) {
+                    return window.showToast(`المستثمر ${s.name} استثمر نقاطاً أكثر من رصيده! الرجاء التعديل.`, 'error');
+                }
+            }
+
+            const generateReturn = (minProfit, maxProfit, minLoss, maxLoss) => {
+                const minP = Math.min(Math.abs(parseFloat(minProfit)), Math.abs(parseFloat(maxProfit)));
+                const maxP = Math.max(Math.abs(parseFloat(minProfit)), Math.abs(parseFloat(maxProfit)));
+                const minL = Math.min(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
+                const maxL = Math.max(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
+                return parseFloat((Math.random() >= 0.5 ? ((Math.random() * (maxP - minP)) + minP) : -((Math.random() * (maxL - minL)) + minL)).toFixed(1));
+            };
+
+            const pSafe = generateReturn(safeMinP, safeMaxP, safeMinL, safeMaxL);
+            const pBal = generateReturn(balMinP, balMaxP, balMinL, balMaxL);
+            const pRisk = generateReturn(riskMinP, riskMaxP, riskMinL, riskMaxL);
+
+            appData.students = appData.students.map(student => {
+                const inv = appData.investments[student.id] || {safe:0, balanced:0, risky:0};
+                
+                const safeReturn = Math.round((inv.safe || 0) * (1 + (pSafe / 100)));
+                const balReturn = Math.round((inv.balanced || 0) * (1 + (pBal / 100)));
+                const riskReturn = Math.round((inv.risky || 0) * (1 + (pRisk / 100)));
+                
+                const totalInvested = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
+                const cash = Math.round(student.balance) - totalInvested;
+                const newBalance = Math.round(cash + safeReturn + balReturn + riskReturn);
+                const diff = newBalance - Math.round(student.balance);
+
+                appData.investments[student.id] = { safe: safeReturn, balanced: balReturn, risky: riskReturn };
+                return { ...student, balance: newBalance, lastDiff: diff };
+            });
+
+            appData.marketResults = { safe: pSafe, balanced: pBal, risky: pRisk };
+            appData.status = 'results';
+            
+            window.showToast('تم حساب النتائج وحفظها محلياً وسحابياً!', 'success');
+            window.saveData(); 
+        };
+
+        window.startNewDay = () => {
+            if(appData.status === 'setup') return window.showToast('أنت بالفعل في مرحلة إعداد اليوم', 'error');
+            appData.day += 1;
+            appData.status = 'setup';
+            appData.marketResults = { safe: null, balanced: null, risky: null };
+            appData.students = appData.students.map(s => ({ ...s, lastDiff: 0 }));
+            window.saveData();
+            window.showToast('بدأ يوم جديد! الأرصدة بقيت في الصناديق وتم المزامنة.', 'success');
+        };
+
+        window.resetGame = () => {
+            if(confirm('سيتم مسح جميع الطلاب والنتائج والعودة لليوم الأول. هل أنت متأكد؟')) {
+                appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {} };
+                window.saveData();
+            }
+        };
+
+        window.showToast = (msg, type='warning') => {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            msgEl.textContent = msg;
+            
+            if(type === 'error') toast.className = "fixed top-5 left-1/2 transform -translate-x-1/2 transition-all duration-300 bg-slate-800 border-b-4 border-red-500 text-white px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3";
+            else if(type === 'success') toast.className = "fixed top-5 left-1/2 transform -translate-x-1/2 transition-all duration-300 bg-slate-800 border-b-4 border-emerald-500 text-white px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3";
+            else toast.className = "fixed top-5 left-1/2 transform -translate-x-1/2 transition-all duration-300 bg-slate-800 border-b-4 border-amber-500 text-white px-6 py-4 rounded-xl shadow-2xl z-50 flex items-center gap-3";
+
+            setTimeout(() => { toast.classList.add('-translate-y-[150%]', 'opacity-0'); }, 3000);
+        };
+
+        // بدء التشغيل الفعلي
+        initApp();
+    </script>
+</body>
+</html>
