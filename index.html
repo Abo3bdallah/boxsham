@@ -145,6 +145,15 @@
         .countdown-active #countdownNumber {
             animation: countPulse 0.8s ease-in-out infinite;
         }
+
+        /* شريط مؤقت الجلسة */
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .session-timer-urgent {
+            animation: timerPulse 1s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-6 md:py-8 px-2 md:px-4 relative pb-32">
@@ -329,10 +338,20 @@
 
         <!-- زر البدء في الشاشة الرئيسية -->
         <div id="startActionWrapper" class="fixed top-4 left-4 md:top-5 md:left-auto md:right-5 z-50 hidden">
-            <button onclick="confirmStartMarket()" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm md:text-xl py-2 px-4 md:px-8 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.5)] border-2 border-emerald-400 transition-all transform hover:scale-105 active:scale-95 animate-pulse flex items-center gap-1 md:gap-2">
-                <svg class="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
-                <span>بدأ</span>
-            </button>
+            <div class="flex items-center gap-1.5 md:gap-2">
+                <button onclick="confirmStartMarket()" id="btnStartMarket" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white font-bold text-sm md:text-lg py-1.5 md:py-2 px-3 md:px-5 rounded-full shadow-[0_0_15px_rgba(16,185,129,0.5)] border-2 border-emerald-400 transition-all transform hover:scale-105 active:scale-95 animate-pulse flex items-center gap-1">
+                    <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
+                    <span>بدأ</span>
+                </button>
+                <button onclick="quickCountdown()" id="btnCountdown" class="bg-amber-600/90 hover:bg-amber-500 text-white font-bold text-xs md:text-sm py-1.5 md:py-2 px-2.5 md:px-3 rounded-full shadow-lg border border-amber-500/50 transition-all hover:scale-105 active:scale-95 flex items-center gap-1" title="بدء العد التنازلي">
+                    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="hidden sm:inline">مؤقت</span>
+                </button>
+                <button onclick="startNewDay()" id="btnNewDay" class="hidden bg-slate-700/90 hover:bg-slate-600 text-white font-bold text-xs md:text-sm py-1.5 md:py-2 px-2.5 md:px-3 rounded-full shadow-lg border border-slate-600/50 transition-all hover:scale-105 active:scale-95 flex items-center gap-1" title="بدء يوم جديد">
+                    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    <span class="hidden sm:inline">جديد</span>
+                </button>
+            </div>
         </div>
 
         <!-- شريط سوق الأسهم (Ticker) -->
@@ -535,6 +554,18 @@
                 بدء العد
             </button>
             <button onclick="cancelCountdown()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 md:px-4 py-1.5 rounded-lg font-bold text-xs md:text-sm transition-colors">إلغاء</button>
+        </div>
+
+        <!-- مؤقت الجلسة الطويل -->
+        <div class="flex items-center gap-2 bg-slate-900/50 rounded-xl p-3 border border-slate-700 flex-wrap">
+            <svg class="w-5 h-5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-slate-400 text-xs md:text-sm font-bold shrink-0">مؤقت الجلسة:</span>
+            <input type="number" id="sessionTimerMinutes" value="10" min="1" max="180" step="1" class="w-14 md:w-16 p-1.5 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-sm focus:border-blue-500 outline-none" dir="ltr">
+            <span class="text-slate-500 text-xs">دقيقة</span>
+            <button onclick="startSessionTimer()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 md:px-4 py-1.5 rounded-lg font-bold text-xs md:text-sm transition-colors flex items-center gap-1">
+                ▶️ بدء
+            </button>
+            <button onclick="cancelSessionTimer()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 md:px-4 py-1.5 rounded-lg font-bold text-xs md:text-sm transition-colors">إلغاء</button>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
@@ -757,10 +788,25 @@
 
     <!-- العداد التنازلي المتزامن -->
     <div id="countdownOverlay" class="fixed inset-0 z-[90] hidden items-center justify-center bg-[#020617]/95">
+        <button onclick="dismissCountdown()" class="absolute top-4 right-4 text-slate-500 hover:text-white p-2 rounded-lg transition-colors z-10" title="إغلاق">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
         <div class="text-center">
             <div id="countdownNumber" class="text-[8rem] md:text-[12rem] font-black text-white leading-none transition-all duration-200"></div>
             <div id="countdownLabel" class="text-xl md:text-3xl text-slate-400 font-bold mt-2"></div>
         </div>
+    </div>
+
+    <!-- شريط مؤقت الجلسة -->
+    <div id="sessionTimerBar" class="fixed top-0 left-0 right-0 z-[85] hidden flex items-center justify-center gap-3 bg-slate-900/95 border-b border-slate-700 py-1.5 md:py-2 px-4 shadow-lg">
+        <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="sessionTimerLabel" class="text-white font-bold text-sm md:text-base font-mono tracking-wider"></span>
+        <div id="sessionTimerProgress" class="h-1.5 bg-slate-700 rounded-full flex-1 max-w-[200px] overflow-hidden">
+            <div id="sessionTimerFill" class="h-full bg-emerald-500 rounded-full transition-all duration-1000" style="width: 100%"></div>
+        </div>
+        <button onclick="dismissSessionTimer()" class="text-slate-500 hover:text-white p-1 transition-colors" title="إخفاء">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
     </div>
 
     <!-- كود JavaScript للتحكم باللعبة (التزامن السحابي والمحلي) -->
@@ -778,6 +824,7 @@
             investments: {},
             history: [],
             countdown: { active: false, startAt: 0, duration: 10 },
+            sessionTimer: { active: false, startAt: 0, duration: 600 },
             marketSettings: {
                 safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
                 balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
@@ -989,7 +1036,7 @@
                 panel.addEventListener('input', () => saveMarketSettings());
             }
 
-            setInterval(processCountdown, 500);
+            setInterval(() => { processCountdown(); processSessionTimer(); }, 500);
         }
 
         function fallbackToLocal() {
@@ -1021,9 +1068,6 @@
             }
             
             if (!silent) renderAll();
-            
-            // حفظ إعدادات السوق عند أي تغيير
-            saveMarketSettings();
         };
 
         function loadMarketSettings() {
@@ -1051,7 +1095,7 @@
                     if (!isNaN(val) && s[f] !== val) { s[f] = val; changed = true; }
                 }
             });
-            if (changed) localStorage.setItem('investment_game_local', JSON.stringify(appData));
+            if (changed) window.saveData(true);
         }
 
         // === العداد التنازلي المتزامن ===
@@ -1065,6 +1109,16 @@
                 document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
                 if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
                 window._countdownDone = false;
+                return;
+            }
+
+            const role = window.userRole;
+            const viewingScreen = document.getElementById('screenView')?.classList.contains('flex');
+            const viewingViewer = document.getElementById('viewerView')?.classList.contains('flex');
+            if (!viewingScreen && !viewingViewer) {
+                document.getElementById('countdownOverlay').classList.add('hidden');
+                document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
+                if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
                 return;
             }
 
@@ -1140,6 +1194,98 @@
             window.saveData();
         };
 
+        window.dismissCountdown = () => {
+            document.getElementById('countdownOverlay').classList.add('hidden');
+            document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+        };
+
+        // === مؤقت الجلسة (طويل المدى) ===
+        let sessionTimerInterval = null;
+
+        function processSessionTimer() {
+            const st = appData.sessionTimer;
+            const bar = document.getElementById('sessionTimerBar');
+            if (!bar) return;
+            
+            if (!st || !st.active || appData.status === 'results') {
+                bar.classList.add('hidden');
+                if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+                return;
+            }
+            
+            const viewingScreen = document.getElementById('screenView')?.classList.contains('flex');
+            const viewingViewer = document.getElementById('viewerView')?.classList.contains('flex');
+            if (!viewingScreen && !viewingViewer) {
+                bar.classList.add('hidden');
+                return;
+            }
+            
+            bar.classList.remove('hidden');
+            
+            const elapsed = (Date.now() - st.startAt) / 1000;
+            const remaining = Math.max(0, Math.ceil(st.duration - elapsed));
+            const total = st.duration;
+            const pct = Math.max(0, Math.min(100, (remaining / total) * 100));
+            
+            const mins = Math.floor(remaining / 60);
+            const secs = remaining % 60;
+            const label = document.getElementById('sessionTimerLabel');
+            const fill = document.getElementById('sessionTimerFill');
+            
+            label.textContent = mins + ':' + String(secs).padStart(2, '0');
+            fill.style.width = pct + '%';
+            
+            bar.classList.remove('session-timer-urgent');
+            if (remaining <= 60 && remaining > 0) {
+                fill.className = 'h-full bg-amber-500 rounded-full transition-all duration-1000';
+                label.className = 'text-amber-400 font-bold text-sm md:text-base font-mono tracking-wider';
+            } else if (remaining <= 0) {
+                fill.className = 'h-full bg-red-500 rounded-full';
+                label.className = 'text-red-400 font-bold text-sm md:text-base font-mono tracking-wider session-timer-urgent';
+            } else {
+                fill.className = 'h-full bg-emerald-500 rounded-full transition-all duration-1000';
+                label.className = 'text-white font-bold text-sm md:text-base font-mono tracking-wider';
+            }
+            
+            if (remaining <= 0 && window.userRole === 'admin') {
+                appData.sessionTimer.active = false;
+                window.saveData();
+                bar.classList.add('hidden');
+                if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+                setTimeout(() => processMarketResults(), 500);
+            }
+        }
+
+        window.startSessionTimer = () => {
+            if (appData.status === 'results') return window.showToast('السوق مغلق بالفعل', 'error');
+            const minInput = document.getElementById('sessionTimerMinutes');
+            const minutes = parseInt(minInput?.value) || 30;
+            const duration = minutes * 60;
+            
+            appData.sessionTimer = { active: true, startAt: Date.now(), duration: duration };
+            window.saveData();
+            processSessionTimer();
+            if (!sessionTimerInterval) {
+                sessionTimerInterval = setInterval(processSessionTimer, 1000);
+            }
+        };
+
+        window.cancelSessionTimer = () => {
+            appData.sessionTimer.active = false;
+            document.getElementById('sessionTimerBar').classList.add('hidden');
+            if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+            window.saveData();
+        };
+
+        window.dismissSessionTimer = () => {
+            document.getElementById('sessionTimerBar').classList.add('hidden');
+        };
+
+        window.quickCountdown = () => {
+            startCountdown();
+        };
+
         // =====================================
         // ربط الدوال بالواجهة
         // =====================================
@@ -1197,6 +1343,7 @@
             renderScreen();
             renderViewer();
             processCountdown();
+            processSessionTimer();
         }
 
         function renderEntry() {
@@ -1727,7 +1874,16 @@
             const startWrapper = document.getElementById('startActionWrapper');
 
             if(appData.status === 'setup') {
-                if(startWrapper) startWrapper.classList.remove('hidden');
+                if(startWrapper) {
+                    if (window.userRole === 'admin') {
+                        startWrapper.classList.remove('hidden');
+                        document.getElementById('btnStartMarket').classList.remove('hidden');
+                        document.getElementById('btnCountdown').classList.remove('hidden');
+                        document.getElementById('btnNewDay').classList.add('hidden');
+                    } else {
+                        startWrapper.classList.add('hidden');
+                    }
+                }
                 statusEl.textContent = 'جاري توزيع الاستثمارات...';
                 statusEl.className = 'mt-2 md:mt-3 text-sm md:text-lg font-bold text-blue-400 animate-pulse bg-blue-900/20 px-4 md:px-5 py-1 md:py-1.5 rounded-full border border-blue-800/30';
                 
@@ -1735,7 +1891,16 @@
                 document.getElementById('resultBalanced').innerHTML = '؟%';
                 document.getElementById('resultRisky').innerHTML = '؟%';
             } else {
-                if(startWrapper) startWrapper.classList.add('hidden');
+                if(startWrapper) {
+                    if (window.userRole === 'admin') {
+                        startWrapper.classList.remove('hidden');
+                        document.getElementById('btnStartMarket').classList.add('hidden');
+                        document.getElementById('btnCountdown').classList.add('hidden');
+                        document.getElementById('btnNewDay').classList.remove('hidden');
+                    } else {
+                        startWrapper.classList.add('hidden');
+                    }
+                }
                 statusEl.textContent = 'نتائج اليوم!';
                 statusEl.className = 'mt-2 md:mt-3 text-sm md:text-lg font-bold text-emerald-400 bg-emerald-900/20 px-4 md:px-5 py-1 md:py-1.5 rounded-full border border-emerald-800/30';
                 
@@ -2159,7 +2324,7 @@
 
         window.resetGame = () => {
             if(confirm('سيتم تصفير جميع البيانات. متأكد؟')) {
-                appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {}, history: [], countdown: { active: false, startAt: 0, duration: 10 }, marketSettings: {
+                appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {}, history: [], countdown: { active: false, startAt: 0, duration: 10 }, sessionTimer: { active: false, startAt: 0, duration: 600 }, marketSettings: {
                     safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
                     balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
                     riskMinP: 10, riskMaxP: 25, riskMinL: 10, riskMaxL: 20, riskProb: 30
