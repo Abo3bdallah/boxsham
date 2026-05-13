@@ -2425,6 +2425,8 @@
             if (backups.length > 20) {
                 localStorage.setItem('investment_game_backups', JSON.stringify(backups.slice(-20)));
             }
+            
+            const s = appData.marketSettings || {};
             const safeMinP = s.safeMinP;
             const safeMaxP = s.safeMaxP;
             const safeMinL = s.safeMinL;
