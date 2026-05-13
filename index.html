@@ -1302,6 +1302,18 @@
                 return;
             }
             
+            const elapsed = (Date.now() - st.startAt) / 1000;
+            const remaining = Math.max(0, Math.ceil(st.duration - elapsed));
+            
+            if (remaining <= 0 && window.userRole === 'admin') {
+                appData.sessionTimer.active = false;
+                window.saveData();
+                bar.classList.add('hidden');
+                if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
+                setTimeout(() => processMarketResults(), 500);
+                return;
+            }
+            
             const viewingScreen = document.getElementById('screenView')?.classList.contains('flex');
             const viewingViewer = document.getElementById('viewerView')?.classList.contains('flex');
             if (!viewingScreen && !viewingViewer) {
@@ -1311,8 +1323,6 @@
             
             bar.classList.remove('hidden');
             
-            const elapsed = (Date.now() - st.startAt) / 1000;
-            const remaining = Math.max(0, Math.ceil(st.duration - elapsed));
             const total = st.duration;
             const pct = Math.max(0, Math.min(100, (remaining / total) * 100));
             
@@ -1328,20 +1338,9 @@
             if (remaining <= 60 && remaining > 0) {
                 fill.className = 'h-full bg-amber-500 rounded-full transition-all duration-1000';
                 label.className = 'text-amber-400 font-bold text-sm md:text-base font-mono tracking-wider';
-            } else if (remaining <= 0) {
-                fill.className = 'h-full bg-red-500 rounded-full';
-                label.className = 'text-red-400 font-bold text-sm md:text-base font-mono tracking-wider session-timer-urgent';
             } else {
                 fill.className = 'h-full bg-emerald-500 rounded-full transition-all duration-1000';
                 label.className = 'text-white font-bold text-sm md:text-base font-mono tracking-wider';
-            }
-            
-            if (remaining <= 0 && window.userRole === 'admin') {
-                appData.sessionTimer.active = false;
-                window.saveData();
-                bar.classList.add('hidden');
-                if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
-                setTimeout(() => processMarketResults(), 500);
             }
         }
 
