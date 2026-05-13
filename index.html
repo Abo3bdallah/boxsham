@@ -450,7 +450,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="quickAdjustFund('safe', -50)" class="bg-red-600/20 hover:bg-red-600/60 text-red-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">-50</button>
-                            <input type="number" id="modalInp_safe" step="1" min="0" oninput="handleModalFundInput('safe', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-blue-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
+                            <input type="number" id="modalInp_safe" step="0.01" min="0" oninput="handleModalFundInput('safe', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-blue-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
                             <button onclick="quickAdjustFund('safe', 50)" class="bg-emerald-600/20 hover:bg-emerald-600/60 text-emerald-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">+50</button>
                         </div>
                     </div>
@@ -463,7 +463,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="quickAdjustFund('balanced', -50)" class="bg-red-600/20 hover:bg-red-600/60 text-red-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">-50</button>
-                            <input type="number" id="modalInp_balanced" step="1" min="0" oninput="handleModalFundInput('balanced', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-purple-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
+                            <input type="number" id="modalInp_balanced" step="0.01" min="0" oninput="handleModalFundInput('balanced', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-purple-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
                             <button onclick="quickAdjustFund('balanced', 50)" class="bg-emerald-600/20 hover:bg-emerald-600/60 text-emerald-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">+50</button>
                         </div>
                     </div>
@@ -476,7 +476,7 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button onclick="quickAdjustFund('risky', -50)" class="bg-red-600/20 hover:bg-red-600/60 text-red-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">-50</button>
-                            <input type="number" id="modalInp_risky" step="1" min="0" oninput="handleModalFundInput('risky', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-orange-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
+                            <input type="number" id="modalInp_risky" step="0.01" min="0" oninput="handleModalFundInput('risky', this.value)" class="flex-1 p-2 md:p-3 rounded-lg bg-slate-800 text-white border border-slate-600 text-center font-bold text-lg focus:border-orange-500 focus:bg-slate-800/80 outline-none transition-all" dir="ltr" placeholder="0">
                             <button onclick="quickAdjustFund('risky', 50)" class="bg-emerald-600/20 hover:bg-emerald-600/60 text-emerald-400 hover:text-white w-8 h-8 md:w-10 md:h-10 rounded-lg font-bold text-sm md:text-base transition-all active:scale-90">+50</button>
                         </div>
                     </div>
@@ -490,6 +490,19 @@
                 </div>
 
                 <button onclick="closeStudentModal()" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-bold text-sm md:text-base transition-colors">إغلاق ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة تأكيد عامة -->
+    <div id="confirmModal" class="fixed inset-0 z-[85] hidden items-center justify-center bg-black/60 backdrop-blur-sm p-4" onclick="if(event.target===this) cancelConfirm()">
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 w-full max-w-sm shadow-2xl" onclick="event.stopPropagation()">
+            <div class="p-5">
+                <p id="confirmModalMsg" class="text-white text-sm md:text-base text-center mb-5 leading-relaxed"></p>
+                <div class="flex gap-3">
+                    <button onclick="cancelConfirm()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-xl font-bold transition-colors text-sm">إلغاء</button>
+                    <button id="confirmModalBtn" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3 rounded-xl font-bold transition-colors text-sm">تأكيد</button>
+                </div>
             </div>
         </div>
     </div>
@@ -592,6 +605,14 @@
                         <button onclick="applyBulkFunds()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 md:py-3 rounded-lg transition text-sm md:text-base">تطبيق عالمحددين</button>
                     </div>
                 </div>
+                <div class="bg-slate-800 rounded-2xl p-4 md:p-6 border border-slate-700">
+                    <h3 class="text-lg md:text-xl font-bold text-amber-400 mb-1 md:mb-2 flex items-center gap-2">إعادة ضبط الأرصدة</h3>
+                    <p class="text-slate-500 text-xs mb-3">تصفير الأموال للمحددين إلى قيمة موحدة (لا يمسح الأسماء أو السجل)</p>
+                    <div class="space-y-2 md:space-y-3">
+                        <input type="number" step="1" id="resetBalanceValue" placeholder="الرصيد الجديد" value="1000" class="w-full p-2.5 md:p-3 rounded-lg bg-slate-900 text-white border border-slate-600 focus:ring-2 focus:ring-amber-500 outline-none text-sm md:text-base">
+                        <button onclick="resetSelectedBalances()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 md:py-3 rounded-lg transition text-sm md:text-base">إعادة ضبط المحددين</button>
+                    </div>
+                </div>
             </div>
 
             <!-- جدول الاستثمارات للإدارة -->
@@ -646,7 +667,7 @@
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="safeProb" step="1" min="0" max="100" value="80" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-blue-500 outline-none" dir="ltr">
+                        <input type="number" id="safeProb" step="0.01" min="0" max="100" value="80" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-blue-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
                     </div>
                 </div>
@@ -670,7 +691,7 @@
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="balProb" step="1" min="0" max="100" value="50" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-purple-500 outline-none" dir="ltr">
+                        <input type="number" id="balProb" step="0.01" min="0" max="100" value="50" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-purple-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
                     </div>
                 </div>
@@ -694,7 +715,7 @@
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="riskProb" step="1" min="0" max="100" value="30" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-orange-500 outline-none" dir="ltr">
+                        <input type="number" id="riskProb" step="0.01" min="0" max="100" value="30" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-orange-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
                     </div>
                 </div>
@@ -715,6 +736,7 @@
             <h2 class="text-xl md:text-2xl font-black text-white mb-4 md:mb-6 text-center border-b border-slate-700 pb-3 md:pb-4 flex items-center justify-center gap-2">
                 <svg class="w-6 h-6 md:w-7 md:h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 <span>سجل الأيام السابقة</span>
+                <button onclick="clearHistory()" class="text-[10px] md:text-xs bg-red-900/30 hover:bg-red-800/60 text-red-400 hover:text-red-300 px-2 md:px-3 py-1 rounded-lg font-bold transition-colors ml-auto" title="مسح السجل">مسح السجل</button>
             </h2>
             <div id="historyContainer" class="space-y-3 max-h-[60vh] overflow-y-auto"></div>
         </div>
@@ -730,6 +752,7 @@
                 <div class="flex flex-wrap items-center gap-1.5">
                     <button onclick="toggleAllChartStudents(true)" class="text-[10px] md:text-xs bg-slate-700 hover:bg-slate-600 text-white px-2 md:px-3 py-1.5 rounded-lg font-bold transition-colors">الكل</button>
                     <button onclick="toggleAllChartStudents(false)" class="text-[10px] md:text-xs bg-slate-700 hover:bg-slate-600 text-white px-2 md:px-3 py-1.5 rounded-lg font-bold transition-colors">إلغاء الكل</button>
+                    <button onclick="resetChartView()" class="text-[10px] md:text-xs bg-slate-700 hover:bg-red-800/60 text-slate-300 hover:text-red-300 px-2 md:px-3 py-1.5 rounded-lg font-bold transition-colors" title="إعادة ضبط">↺</button>
                     <span class="text-slate-600 mx-1">|</span>
                     <div id="chartStudentFilters" class="flex flex-wrap gap-1"></div>
                 </div>
@@ -809,11 +832,45 @@
         </button>
     </div>
 
+    <!-- شريط التراجع السفلي -->
+    <div id="undoBar" class="fixed bottom-16 md:bottom-20 left-1/2 transform -translate-x-1/2 z-[55] hidden bg-slate-800 border border-slate-600 rounded-full px-4 py-2 shadow-2xl flex items-center gap-3">
+        <span id="undoBarMsg" class="text-white text-xs md:text-sm font-bold"></span>
+        <button onclick="executeUndo()" class="text-amber-400 hover:text-amber-300 font-bold text-xs md:text-sm underline transition-colors">تراجع</button>
+        <button onclick="dismissUndo()" class="text-slate-500 hover:text-white text-xs transition-colors">✕</button>
+    </div>
+
     <!-- كود JavaScript للتحكم باللعبة (التزامن السحابي والمحلي) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // حماية: تنظيف البيانات الضخمة تلقائياً قبل البدء
+        (function cleanupStorage() {
+            const key = 'investment_game_local';
+            const raw = localStorage.getItem(key);
+            if (!raw) return;
+            try {
+                if (raw.length > 300000) {
+                    localStorage.removeItem(key);
+                    localStorage.removeItem('investment_game_backups');
+                    console.log('تم مسح البيانات القديمة لحل مشكلة الحجم');
+                }
+            } catch(e) {
+                localStorage.clear();
+                console.log('تم مسح جميع البيانات');
+            }
+        })();
+
+        const r2 = (v) => Math.round(v * 100) / 100;
+        const fmt = (v) => {
+            if (v == null || isNaN(v)) return '0';
+            const parts = v.toFixed(2).split('.');
+            parts[0] = Number(parts[0]).toLocaleString();
+            if (parts[1] === '00') return parts[0];
+            if (parts[1].endsWith('0')) return parts[0] + '.' + parts[1][0];
+            return parts[0] + '.' + parts[1];
+        };
 
         // هيكل البيانات الأساسي
         let appData = {
@@ -959,7 +1016,22 @@
             if (localSaved) {
                 try {
                     appData = JSON.parse(localSaved);
+                    if (appData.history && appData.history.length > 50) {
+                        appData.history = appData.history.slice(-50);
+                        try { localStorage.setItem('investment_game_local', JSON.stringify(appData)); } catch(e) {}
+                    }
                 } catch(e) { console.error("Error parsing local data", e); }
+            }
+
+            // تنظيف النسخ الاحتياطية القديمة
+            const bu = localStorage.getItem('investment_game_backups');
+            if (bu) {
+                try {
+                    let backups = JSON.parse(bu);
+                    if (backups.length > 20) {
+                        localStorage.setItem('investment_game_backups', JSON.stringify(backups.slice(-20)));
+                    }
+                } catch(e) {}
             }
 
             // 2. تفعيل السحابة ببياناتك الخاصة
@@ -1001,9 +1073,16 @@
                             onSnapshot(docRef, (snap) => {
                                 if (snap.exists()) {
                                     const newData = snap.data();
+                                    if (newData.history && newData.history.length > 50) {
+                                        newData.history = newData.history.slice(-50);
+                                    }
                                     if(JSON.stringify(newData) !== JSON.stringify(appData)){
                                         appData = newData;
-                                        localStorage.setItem('investment_game_local', JSON.stringify(appData));
+                                        try {
+                                            localStorage.setItem('investment_game_local', JSON.stringify(appData));
+                                        } catch(e) {
+                                            console.warn('localStorage full, skipping local save');
+                                        }
                                         renderAll();
                                     }
                                 } else {
@@ -1058,7 +1137,11 @@
         }
 
         window.saveData = (silent = false) => {
-            localStorage.setItem('investment_game_local', JSON.stringify(appData));
+            try {
+                localStorage.setItem('investment_game_local', JSON.stringify(appData));
+            } catch(e) {
+                console.warn('Could not save to localStorage:', e.message);
+            }
 
             if (isCloudSynced && docRef && currentUser) {
                 clearTimeout(saveTimeout);
@@ -1101,14 +1184,16 @@
         // === العداد التنازلي المتزامن ===
         let countdownInterval = null;
         window._countdownDone = false;
+        window._countdownDismissed = false;
 
         function processCountdown() {
             const cd = appData.countdown;
-            if (!cd || !cd.active) {
+            if (!cd || !cd.active || window._countdownDismissed) {
                 document.getElementById('countdownOverlay').classList.add('hidden');
                 document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
                 if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
-                window._countdownDone = false;
+                if (!cd || !cd.active) window._countdownDismissed = false;
+                if (!cd || !cd.active) window._countdownDone = false;
                 return;
             }
 
@@ -1181,6 +1266,7 @@
 
             appData.countdown = { active: true, startAt: Date.now(), duration: duration };
             window._countdownDone = false;
+            window._countdownDismissed = false;
             window.saveData();
             processCountdown();
         };
@@ -1188,6 +1274,7 @@
         window.cancelCountdown = () => {
             appData.countdown.active = false;
             window._countdownDone = false;
+            window._countdownDismissed = false;
             document.getElementById('countdownOverlay').classList.add('hidden');
             document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
             if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
@@ -1195,6 +1282,7 @@
         };
 
         window.dismissCountdown = () => {
+            window._countdownDismissed = true;
             document.getElementById('countdownOverlay').classList.add('hidden');
             document.getElementById('countdownOverlay').classList.remove('flex', 'countdown-active');
             if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
@@ -1368,7 +1456,7 @@
             }
 
             appData.students.forEach(student => {
-                const balanceVal = Math.round(student.balance);
+                const balanceVal = r2(student.balance);
                 
                 const card = document.createElement('div');
                 card.className = 'entry-card bg-slate-800/80 border border-slate-700 hover:border-emerald-500/50 rounded-2xl p-4 cursor-pointer transition-all shadow-lg hover:shadow-emerald-900/10';
@@ -1385,7 +1473,7 @@
                         </div>
                         <div class="flex items-center gap-1.5 md:gap-2 shrink-0">
                             <button onclick="event.stopPropagation(); quickEntryAdjustBalance('${student.id}', -50)" class="bg-red-600/30 hover:bg-red-600 text-red-400 hover:text-white w-8 h-8 md:w-9 md:h-9 rounded-full font-black text-sm transition-all active:scale-90" title="خصم 50 من المحفظة">-50</button>
-                            <span id="entry_bal_${student.id}" class="text-lg md:text-2xl font-black text-emerald-400 min-w-[60px] text-center">${balanceVal.toLocaleString()}</span>
+                            <span id="entry_bal_${student.id}" class="text-lg md:text-2xl font-black text-emerald-400 min-w-[60px] text-center">${fmt(balanceVal)}</span>
                             <button onclick="event.stopPropagation(); quickEntryAdjustBalance('${student.id}', 50)" class="bg-emerald-600/30 hover:bg-emerald-600 text-emerald-400 hover:text-white w-8 h-8 md:w-9 md:h-9 rounded-full font-black text-sm transition-all active:scale-90" title="إضافة 50 للمحفظة">+50</button>
                         </div>
                     </div>
@@ -1425,15 +1513,15 @@
             if (!student) return;
             const inv = appData.investments[studentId] || { safe: 0, balanced: 0, risky: 0 };
             
-            document.getElementById('modalBalance').textContent = Math.round(student.balance).toLocaleString();
+            document.getElementById('modalBalance').textContent = fmt(student.balance);
             document.getElementById('modalInp_safe').value = inv.safe || 0;
             document.getElementById('modalInp_balanced').value = inv.balanced || 0;
             document.getElementById('modalInp_risky').value = inv.risky || 0;
             
-            const total = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
-            const remaining = Math.round(student.balance) - total;
+            const total = r2((inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0));
+            const remaining = r2(student.balance) - total;
             const remEl = document.getElementById('modalRemaining');
-            remEl.textContent = Math.round(remaining).toLocaleString();
+            remEl.textContent = fmt(remaining);
             
             const overBudget = document.getElementById('modalOverBudget');
             
@@ -1463,17 +1551,17 @@
             if (amount < 0) {
                 const inv = appData.investments[id] || { safe: 0, balanced: 0, risky: 0 };
                 const totalInvested = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
-                if (Math.round(student.balance + amount) < totalInvested) {
+                if (r2(student.balance + amount) < totalInvested) {
                     window.showToast('لا يمكن خصم أكثر من الرصيد غير المستثمر!', 'error');
                     return;
                 }
             }
             
-            student.balance = Math.round(student.balance + amount);
+            student.balance = r2(student.balance + amount);
             window.saveData(true);
             updateModalDisplay(id);
             const balEl = document.getElementById('entry_bal_' + id);
-            if (balEl) balEl.textContent = Math.round(student.balance).toLocaleString();
+            if (balEl) balEl.textContent = fmt(student.balance);
         };
 
         window.quickEntryAdjustBalance = (studentId, amount) => {
@@ -1484,16 +1572,16 @@
             if (amount < 0) {
                 const inv = appData.investments[studentId] || { safe: 0, balanced: 0, risky: 0 };
                 const totalInvested = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
-                if (Math.round(student.balance + amount) < totalInvested) {
+                if (r2(student.balance + amount) < totalInvested) {
                     window.showToast('لا يمكن خصم أكثر من الرصيد غير المستثمر!', 'error');
                     return;
                 }
             }
             
-            student.balance = Math.round(student.balance + amount);
+            student.balance = r2(student.balance + amount);
             window.saveData(true);
             const balEl = document.getElementById('entry_bal_' + studentId);
-            if (balEl) balEl.textContent = Math.round(student.balance).toLocaleString();
+            if (balEl) balEl.textContent = fmt(student.balance);
         };
 
         window.quickAdjustFund = (fundType, amount) => {
@@ -1506,7 +1594,7 @@
                 if (!student) return;
                 const inv = appData.investments[id];
                 const totalInvested = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
-                const remaining = Math.round(student.balance) - totalInvested;
+                const remaining = r2(student.balance) - totalInvested;
                 
                 if (remaining <= 0) {
                     window.showToast('لا يوجد رصيد متاح للتوزيع!', 'error');
@@ -1518,7 +1606,7 @@
                 }
             }
             
-            appData.investments[id][fundType] = Math.max(0, Math.round((appData.investments[id][fundType] || 0) + amount));
+            appData.investments[id][fundType] = Math.max(0, r2((appData.investments[id][fundType] || 0) + amount));
             window.saveData(true);
             updateModalDisplay(id);
         };
@@ -1528,13 +1616,13 @@
             if (!id || appData.status === 'results') return;
             if (!appData.investments[id]) appData.investments[id] = { safe: 0, balanced: 0, risky: 0 };
             
-            let newVal = value === '' ? 0 : Math.round(parseFloat(value));
+            let newVal = value === '' ? 0 : r2(parseFloat(value));
             
             const student = appData.students.find(s => s.id === id);
             if (student) {
                 const inv = appData.investments[id];
-                const otherFunds = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0) - (inv[fundType] || 0);
-                const maxAllowed = Math.round(student.balance) - otherFunds;
+                const otherFunds = r2((inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0) - (inv[fundType] || 0));
+                const maxAllowed = r2(student.balance) - otherFunds;
                 
                 if (newVal > maxAllowed) {
                     newVal = Math.max(0, maxAllowed);
@@ -1572,13 +1660,13 @@
 
             appData.students.forEach(student => {
                 const inv = appData.investments[student.id] || { safe: 0, balanced: 0, risky: 0 };
-                const safeVal = Math.round(inv.safe) || 0;
-                const balVal = Math.round(inv.balanced) || 0;
-                const riskVal = Math.round(inv.risky) || 0;
-                const balanceVal = Math.round(student.balance);
+                const safeVal = r2(inv.safe) || 0;
+                const balVal = r2(inv.balanced) || 0;
+                const riskVal = r2(inv.risky) || 0;
+                const balanceVal = r2(student.balance);
                 
                 const totalInvested = safeVal + balVal + riskVal;
-                const remaining = Math.round(balanceVal - totalInvested);
+                const remaining = r2(balanceVal - totalInvested);
                 const isOver = remaining < 0;
                 
                 const tr = document.createElement('tr');
@@ -1588,11 +1676,11 @@
                 tr.innerHTML = `
                     <td class="py-2 md:py-3 px-1 md:px-2 text-center"><input type="checkbox" class="student-select w-4 h-4 md:w-5 md:h-5 p-2 accent-emerald-500 cursor-pointer" value="${student.id}"></td>
                     <td class="py-2 md:py-3 pr-2 font-bold text-white text-sm md:text-lg">${student.name}</td>
-                    <td class="py-2 md:py-3"><input type="number" id="admin_inpBal_${student.id}" step="1" min="0" ${disabledStr} value="${balanceVal}" oninput="window.handleBalanceInput('${student.id}', this.value)" class="w-20 md:w-24 p-1.5 md:p-2 bg-emerald-900/20 border border-emerald-800/50 rounded text-center text-emerald-400 font-bold focus:border-emerald-500 focus:bg-slate-900 outline-none transition-colors text-sm md:text-base"></td>
-                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_safe" step="1" min="0" ${disabledStr} value="${inv.safe > 0 ? safeVal : ''}" oninput="window.handleInput('${student.id}', 'safe', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-blue-500 outline-none transition-colors text-sm md:text-base"></td>
-                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_balanced" step="1" min="0" ${disabledStr} value="${inv.balanced > 0 ? balVal : ''}" oninput="window.handleInput('${student.id}', 'balanced', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-purple-500 outline-none transition-colors text-sm md:text-base"></td>
-                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_risky" step="1" min="0" ${disabledStr} value="${inv.risky > 0 ? riskVal : ''}" oninput="window.handleInput('${student.id}', 'risky', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-orange-500 outline-none transition-colors text-sm md:text-base"></td>
-                    <td class="py-2 md:py-3"><input type="number" id="admin_inpCash_${student.id}" step="1" ${disabledStr} value="${remaining}" oninput="window.handleCashInput('${student.id}', this.value)" class="w-20 md:w-24 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500 text-red-500' : 'border-slate-600 text-slate-300'} font-bold rounded text-center focus:border-emerald-500 outline-none transition-colors text-sm md:text-base"></td>
+                    <td class="py-2 md:py-3"><input type="number" id="admin_inpBal_${student.id}" step="0.01" min="0" ${disabledStr} value="${balanceVal}" oninput="window.handleBalanceInput('${student.id}', this.value)" class="w-20 md:w-24 p-1.5 md:p-2 bg-emerald-900/20 border border-emerald-800/50 rounded text-center text-emerald-400 font-bold focus:border-emerald-500 focus:bg-slate-900 outline-none transition-colors text-sm md:text-base"></td>
+                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_safe" step="0.01" min="0" ${disabledStr} value="${inv.safe > 0 ? safeVal : ''}" oninput="window.handleInput('${student.id}', 'safe', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-blue-500 outline-none transition-colors text-sm md:text-base"></td>
+                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_balanced" step="0.01" min="0" ${disabledStr} value="${inv.balanced > 0 ? balVal : ''}" oninput="window.handleInput('${student.id}', 'balanced', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-purple-500 outline-none transition-colors text-sm md:text-base"></td>
+                    <td class="py-2 md:py-3"><input type="number" id="admin_inp_${student.id}_risky" step="0.01" min="0" ${disabledStr} value="${inv.risky > 0 ? riskVal : ''}" oninput="window.handleInput('${student.id}', 'risky', this.value)" class="w-16 md:w-20 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500' : 'border-slate-600'} rounded text-center text-white focus:border-orange-500 outline-none transition-colors text-sm md:text-base"></td>
+                    <td class="py-2 md:py-3"><input type="number" id="admin_inpCash_${student.id}" step="0.01" ${disabledStr} value="${remaining}" oninput="window.handleCashInput('${student.id}', this.value)" class="w-20 md:w-24 p-1.5 md:p-2 bg-slate-900 border ${isOver ? 'border-red-500 text-red-500' : 'border-slate-600 text-slate-300'} font-bold rounded text-center focus:border-emerald-500 outline-none transition-colors text-sm md:text-base"></td>
                     <td class="py-2 md:py-3 text-center flex justify-center gap-1 md:gap-2">
                         <button onclick="window.deleteStudent('${student.id}')" title="حذف المستثمر" class="text-red-500 hover:text-red-400 p-2 md:p-3 bg-slate-800 rounded transition-colors mt-1">
                             <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -1685,7 +1773,7 @@
                                 </thead>
                                 <tbody>
                                     ${(entry.students || []).sort((a, b) => b.balance - a.balance).map((s, i) => {
-                                        const diff = Math.round(s.lastDiff || 0);
+                                        const diff = r2(s.lastDiff || 0);
                                         const isPos = diff > 0;
                                         const isNeg = diff < 0;
                                         const sign = isPos ? '+' : '';
@@ -1694,8 +1782,8 @@
                                         <tr class="border-b border-slate-800/50 hover:bg-slate-800/30">
                                             <td class="py-1.5 md:py-2 px-2 text-center text-slate-500">${i + 1}</td>
                                             <td class="py-1.5 md:py-2 px-2 font-bold text-slate-200">${s.name}</td>
-                                            <td class="py-1.5 md:py-2 px-2 text-left font-mono font-bold">${Math.round(s.balance).toLocaleString()}</td>
-                                            <td class="py-1.5 md:py-2 px-2 text-left font-mono font-bold ${colorClass}" dir="ltr">${sign}${diff.toLocaleString()}</td>
+                                            <td class="py-1.5 md:py-2 px-2 text-left font-mono font-bold">${fmt(s.balance)}</td>
+                                            <td class="py-1.5 md:py-2 px-2 text-left font-mono font-bold ${colorClass}" dir="ltr">${sign}${fmt(diff)}</td>
                                         </tr>`;
                                     }).join('')}
                                 </tbody>
@@ -1791,7 +1879,7 @@
             const datasets = visibleStudents.map((student, i) => {
                 const data = history.map(entry => {
                     const s = (entry.students || []).find(st => st.id === student.id);
-                    return s ? Math.round(s.balance) : null;
+                    return s ? r2(s.balance) : null;
                 });
                 return {
                     label: student.name,
@@ -1868,6 +1956,73 @@
             renderChart();
         };
 
+        window.resetChartView = () => {
+            window._chartHiddenStudents = null;
+            if (window._chartInstance) { window._chartInstance.destroy(); window._chartInstance = null; }
+            renderChart();
+        };
+
+        window.clearHistory = () => {
+            const backup = JSON.parse(JSON.stringify(appData.history));
+            appData.history = [];
+            window.saveData();
+            showUndo('تم مسح السجل', () => {
+                appData.history = backup;
+                window.saveData();
+            });
+        };
+
+        // === شريط التراجع ===
+        window._undoAction = null;
+        window._undoTimer = null;
+
+        function showUndo(msg, callback) {
+            if (window._undoTimer) clearTimeout(window._undoTimer);
+            window._undoAction = callback;
+            document.getElementById('undoBarMsg').textContent = msg;
+            document.getElementById('undoBar').classList.remove('hidden');
+            window._undoTimer = setTimeout(() => dismissUndo(), 5000);
+        }
+
+        window.executeUndo = () => {
+            if (window._undoAction) window._undoAction();
+            dismissUndo();
+        };
+
+        window.dismissUndo = () => {
+            window._undoAction = null;
+            document.getElementById('undoBar').classList.add('hidden');
+            if (window._undoTimer) { clearTimeout(window._undoTimer); window._undoTimer = null; }
+        };
+
+        // === نافذة التأكيد العامة ===
+        window._confirmCallback = null;
+
+        window.showConfirm = (msg, callback, btnText = 'تأكيد', btnClass = 'bg-red-600 hover:bg-red-500') => {
+            document.getElementById('confirmModalMsg').textContent = msg;
+            const btn = document.getElementById('confirmModalBtn');
+            btn.textContent = btnText;
+            btn.className = `flex-1 ${btnClass} text-white py-3 rounded-xl font-bold transition-colors text-sm`;
+            window._confirmCallback = callback;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        };
+
+        window.cancelConfirm = () => {
+            window._confirmCallback = null;
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        };
+
+        try {
+            document.getElementById('confirmModalBtn').addEventListener('click', () => {
+                if (window._confirmCallback) window._confirmCallback();
+                cancelConfirm();
+            });
+        } catch(e) {
+            console.warn('Confirm modal setup failed:', e);
+        }
+
         function renderScreen() {
             document.getElementById('displayDay').textContent = appData.day;
             const statusEl = document.getElementById('displayStatus');
@@ -1938,11 +2093,11 @@
             }
 
             sortedStudents.forEach((student, index) => {
-                const diff = Math.round(student.lastDiff || 0);
+                const diff = r2(student.lastDiff || 0);
                 const isPos = diff > 0;
                 const isNeg = diff < 0;
                 let percentChange = 0;
-                const oldBalance = Math.round(student.balance - diff);
+                const oldBalance = r2(student.balance - diff);
                 if(oldBalance > 0 && diff !== 0) percentChange = (diff / oldBalance) * 100;
 
                 const colorClass = isPos ? 'text-emerald-400' : (isNeg ? 'text-red-500' : 'text-slate-400');
@@ -1959,8 +2114,8 @@
                     <tr class="border-b border-slate-800 hover:bg-slate-800/40 transition-colors ${bgFlashClass}">
                         <td class="py-3 md:py-4 px-3 md:px-4 text-center">${rankIcon}</td>
                         <td class="py-3 md:py-4 px-3 md:px-4 font-bold text-sm md:text-xl text-slate-100">${student.name}</td>
-                        <td class="py-3 md:py-4 px-3 md:px-4 text-left font-black text-lg md:text-2xl text-white">${Math.round(student.balance).toLocaleString()}</td>
-                        <td class="py-3 md:py-4 px-3 md:px-4 text-left font-bold text-sm md:text-lg ${colorClass}" dir="ltr">${sign}${diff.toLocaleString()}</td>
+                        <td class="py-3 md:py-4 px-3 md:px-4 text-left font-black text-lg md:text-2xl text-white">${fmt(student.balance)}</td>
+                        <td class="py-3 md:py-4 px-3 md:px-4 text-left font-bold text-sm md:text-lg ${colorClass}" dir="ltr">${sign}${fmt(diff)}</td>
                         <td class="py-3 md:py-4 px-3 md:px-4 text-left font-bold text-xs md:text-lg ${colorClass} bg-slate-900/30" dir="ltr">${sign}${percentChange.toFixed(1)}% ${arrow}</td>
                     </tr>
                 `;
@@ -2004,7 +2159,7 @@
             }
             
             sorted.forEach((s, i) => {
-                const diff = Math.round(s.lastDiff || 0);
+                const diff = r2(s.lastDiff || 0);
                 const arrow = diff > 0 ? '▲' : (diff < 0 ? '▼' : '');
                 const color = diff > 0 ? 'text-emerald-400' : (diff < 0 ? 'text-red-400' : 'text-slate-500');
                 const sign = diff > 0 ? '+' : '';
@@ -2013,8 +2168,8 @@
                     <div class="flex items-center gap-2 px-3 py-2 ${appData.status === 'results' && diff > 0 ? 'stock-flash-up' : (diff < 0 ? 'stock-flash-down' : '')}">
                         <span class="text-slate-500 text-xs w-5 text-center font-bold">${i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : (i+1)))}</span>
                         <span class="flex-1 text-white font-bold text-sm truncate">${s.name}</span>
-                        <span class="text-white font-mono font-bold text-sm">${Math.round(s.balance).toLocaleString()}</span>
-                        <span class="${color} text-xs font-mono w-14 text-left">${sign}${diff.toLocaleString()} ${arrow}</span>
+                        <span class="text-white font-mono font-bold text-sm">${fmt(s.balance)}</span>
+                        <span class="${color} text-xs font-mono w-14 text-left">${sign}${fmt(diff)} ${arrow}</span>
                     </div>
                 `;
             });
@@ -2027,7 +2182,7 @@
             if(!rawNames) return window.showToast('يرجى إدخال اسم مستثمر واحد على الأقل', 'error');
             
             const namesList = rawNames.split(/[\n,]+/).map(n => n.trim()).filter(n => n !== '');
-            const defaultBalance = Math.round(parseFloat(balInput.value)) || 1000;
+            const defaultBalance = r2(parseFloat(balInput.value)) || 1000;
             
             namesList.forEach((name, index) => {
                 const newId = 'stu_' + Date.now() + '_' + index;
@@ -2041,11 +2196,23 @@
         };
 
         window.deleteStudent = (id) => {
-            if(confirm('هل أنت متأكد من حذف هذا المستثمر؟')) {
+            const student = appData.students.find(s => s.id === id);
+            if (!student) return;
+            
+            const name = student.name;
+            showConfirm(`هل أنت متأكد من حذف ${name}؟`, () => {
+                const backup = { student: JSON.parse(JSON.stringify(student)), investments: JSON.parse(JSON.stringify(appData.investments[id] || {})) };
+                
                 appData.students = appData.students.filter(s => s.id !== id);
                 delete appData.investments[id];
                 window.saveData();
-            }
+                
+                showUndo(`تم حذف ${name}`, () => {
+                    appData.students.push(backup.student);
+                    appData.investments[id] = backup.investments;
+                    window.saveData();
+                });
+            });
         };
 
         window.toggleSelectAll = (isChecked) => {
@@ -2056,7 +2223,7 @@
             const amountInput = document.getElementById('bulkAmount').value;
             if (amountInput === '') return window.showToast('يرجى إدخال المبلغ أولاً', 'error');
             
-            const amount = Math.round(parseFloat(amountInput));
+            const amount = r2(parseFloat(amountInput));
             if (isNaN(amount)) return window.showToast('المبلغ المدخل غير صحيح', 'error');
 
             const selectedCheckboxes = document.querySelectorAll('.student-select:checked');
@@ -2076,27 +2243,67 @@
             }
         };
 
+        window.resetSelectedBalances = () => {
+            const selectedCheckboxes = document.querySelectorAll('.student-select:checked');
+            if (selectedCheckboxes.length === 0) return window.showToast('يرجى تحديد مستثمر واحد على الأقل', 'error');
+            
+            const newBalance = parseFloat(document.getElementById('resetBalanceValue')?.value) || 1000;
+            const count = selectedCheckboxes.length;
+
+            showConfirm(`سيتم إعادة ضبط أرصدة ${count} مستثمر إلى ${newBalance}. متأكد؟`, () => {
+                const backup = {};
+                selectedCheckboxes.forEach(cb => {
+                    const student = appData.students.find(s => s.id === cb.value);
+                    if (student) {
+                        backup[student.id] = {
+                            balance: student.balance,
+                            lastDiff: student.lastDiff,
+                            investments: JSON.parse(JSON.stringify(appData.investments[student.id] || {}))
+                        };
+                        student.balance = newBalance;
+                        student.lastDiff = 0;
+                        appData.investments[student.id] = { safe: 0, balanced: 0, risky: 0 };
+                    }
+                });
+                
+                window.saveData();
+                document.getElementById('selectAllCheckbox').checked = false;
+                
+                showUndo(`تم إعادة ضبط ${count} مستثمر`, () => {
+                    Object.keys(backup).forEach(id => {
+                        const student = appData.students.find(s => s.id === id);
+                        if (student) {
+                            student.balance = backup[id].balance;
+                            student.lastDiff = backup[id].lastDiff;
+                            appData.investments[id] = backup[id].investments;
+                        }
+                    });
+                    window.saveData();
+                });
+            }, 'إعادة ضبط', 'bg-amber-600 hover:bg-amber-500');
+        };
+
         function updateUIInputs(studentId, func) { ['admin_', 'entry_'].forEach(func); }
 
         window.handleBalanceInput = (studentId, value) => {
             if(appData.status === 'results') return;
             const student = appData.students.find(s => s.id === studentId);
             if(!student) return;
-            student.balance = value === '' ? 0 : Math.round(parseFloat(value));
+            student.balance = value === '' ? 0 : r2(parseFloat(value));
             window.saveData(true); 
             window.updateRemainingUI(studentId);
         };
 
         window.handleInput = (studentId, fundType, value) => {
             if(appData.status === 'results') return;
-            let num = value === '' ? 0 : Math.round(parseFloat(value));
+            let num = value === '' ? 0 : r2(parseFloat(value));
             if(!appData.investments[studentId]) appData.investments[studentId] = { safe:0, balanced:0, risky:0 };
             
             const student = appData.students.find(s => s.id === studentId);
             if (student) {
                 const inv = appData.investments[studentId];
-                const otherFunds = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0) - (inv[fundType] || 0);
-                const maxAllowed = Math.round(student.balance) - otherFunds;
+                const otherFunds = r2((inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0) - (inv[fundType] || 0));
+                const maxAllowed = r2(student.balance) - otherFunds;
                 
                 if (num > maxAllowed) {
                     num = Math.max(0, maxAllowed);
@@ -2116,15 +2323,15 @@
             const student = appData.students.find(s => s.id === studentId);
             if(!student) return;
 
-            const newCash = value === '' ? 0 : Math.round(parseFloat(value));
+            const newCash = value === '' ? 0 : r2(parseFloat(value));
             const inv = appData.investments[studentId] || {safe:0, balanced:0, risky:0};
-            const totalInv = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
+            const totalInv = r2((inv.safe||0) + (inv.balanced||0) + (inv.risky||0));
             
-            student.balance = Math.round(totalInv + newCash);
+            student.balance = r2(totalInv + newCash);
             window.saveData(true); 
             
             const balInp = document.getElementById(`admin_inpBal_${studentId}`);
-            if(balInp) balInp.value = Math.round(student.balance);
+            if(balInp) balInp.value = r2(student.balance);
             
             window.updateRemainingUI(studentId, true); 
         };
@@ -2133,15 +2340,15 @@
             const student = appData.students.find(s => s.id === studentId);
             if(!student) return;
             const inv = appData.investments[studentId] || {safe:0, balanced:0, risky:0};
-            const total = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
-            const remaining = Math.round(student.balance - total);
+            const total = r2((inv.safe||0) + (inv.balanced||0) + (inv.risky||0));
+            const remaining = r2(student.balance - total);
             const isOver = remaining < 0;
             
             updateUIInputs(studentId, (prefix) => {
                 if(!ignoreCashField) {
                     const cashInp = document.getElementById(`${prefix}inpCash_${studentId}`);
                     if(cashInp) {
-                        cashInp.value = Math.round(remaining);
+                        cashInp.value = r2(remaining);
                         
                         if(isOver) {
                             cashInp.classList.add('text-red-500');
@@ -2205,16 +2412,19 @@
         window.processMarketResults = () => {
             if (window.currentModalStudentId) closeStudentModal();
 
-            localStorage.setItem('investment_game_backup', JSON.stringify({
+            const backups = JSON.parse(localStorage.getItem('investment_game_backups') || '[]');
+            backups.push({
                 day: appData.day,
                 status: appData.status,
                 students: appData.students,
                 investments: appData.investments,
                 marketResults: appData.marketResults,
                 history: appData.history || []
-            }));
-            
-            const s = appData.marketSettings || {};
+            });
+            localStorage.setItem('investment_game_backups', JSON.stringify(backups));
+            if (backups.length > 20) {
+                localStorage.setItem('investment_game_backups', JSON.stringify(backups.slice(-20)));
+            }
             const safeMinP = s.safeMinP;
             const safeMaxP = s.safeMaxP;
             const safeMinL = s.safeMinL;
@@ -2242,11 +2452,13 @@
 
             for(let s of appData.students) {
                 const inv = appData.investments[s.id] || {};
-                const total = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
-                if(total > Math.round(s.balance)) {
+                const total = r2((inv.safe||0) + (inv.balanced||0) + (inv.risky||0));
+                if(total > r2(s.balance)) {
                     return window.showToast(`المستثمر ${s.name} تجاوز رصيده!`, 'error');
                 }
             }
+
+            const bellRandom = () => (Math.random() + Math.random() + Math.random()) / 3;
 
             const generateReturn = (minProfit, maxProfit, minLoss, maxLoss, profitProb) => {
                 const minP = Math.min(Math.abs(parseFloat(minProfit)), Math.abs(parseFloat(maxProfit)));
@@ -2254,7 +2466,11 @@
                 const minL = Math.min(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
                 const maxL = Math.max(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
                 const prob = parseFloat(profitProb) / 100;
-                return parseFloat((Math.random() < prob ? ((Math.random() * (maxP - minP)) + minP) : -((Math.random() * (maxL - minL)) + minL)).toFixed(1));
+                if (Math.random() < prob) {
+                    return parseFloat((bellRandom() * (maxP - minP) + minP).toFixed(2));
+                } else {
+                    return parseFloat((-(bellRandom() * (maxL - minL) + minL)).toFixed(2));
+                }
             };
 
             const pSafe = generateReturn(safeMinP, safeMaxP, safeMinL, safeMaxL, safeProb);
@@ -2264,14 +2480,14 @@
             appData.students = appData.students.map(student => {
                 const inv = appData.investments[student.id] || {safe:0, balanced:0, risky:0};
                 
-                const safeReturn = Math.round((inv.safe || 0) * (1 + (pSafe / 100)));
-                const balReturn = Math.round((inv.balanced || 0) * (1 + (pBal / 100)));
-                const riskReturn = Math.round((inv.risky || 0) * (1 + (pRisk / 100)));
+                const safeReturn = r2((inv.safe || 0) * (1 + (pSafe / 100)));
+                const balReturn = r2((inv.balanced || 0) * (1 + (pBal / 100)));
+                const riskReturn = r2((inv.risky || 0) * (1 + (pRisk / 100)));
                 
-                const totalInvested = Math.round(inv.safe||0) + Math.round(inv.balanced||0) + Math.round(inv.risky||0);
-                const cash = Math.round(student.balance) - totalInvested;
-                const newBalance = Math.round(cash + safeReturn + balReturn + riskReturn);
-                const diff = newBalance - Math.round(student.balance);
+                const totalInvested = r2((inv.safe||0) + (inv.balanced||0) + (inv.risky||0));
+                const cash = r2(student.balance) - totalInvested;
+                const newBalance = r2(cash + safeReturn + balReturn + riskReturn);
+                const diff = newBalance - r2(student.balance);
 
                 appData.investments[student.id] = { safe: safeReturn, balanced: balReturn, risky: riskReturn };
                 return { ...student, balance: newBalance, lastDiff: diff };
@@ -2281,6 +2497,9 @@
             appData.status = 'results';
 
             if (!appData.history) appData.history = [];
+            if (appData.history.length >= 50) {
+                appData.history = appData.history.slice(-49);
+            }
             appData.history.push({
                 day: appData.day,
                 timestamp: Date.now(),
@@ -2294,22 +2513,25 @@
         };
 
         window.undoLastDay = () => {
-            const backup = localStorage.getItem('investment_game_backup');
-            if (!backup) return window.showToast('لا يوجد يوم سابق للتراجع عنه', 'error');
+            const backups = JSON.parse(localStorage.getItem('investment_game_backups') || '[]');
+            if (backups.length === 0) return window.showToast('لا يوجد أيام سابقة للتراجع عنها', 'error');
             
-            if (!confirm('سيتم إلغاء نتائج آخر يوم والعودة للحالة السابقة. متأكد؟')) return;
-            
-            const data = JSON.parse(backup);
-            appData.day = data.day;
-            appData.status = data.status;
-            appData.students = data.students;
-            appData.investments = data.investments;
-            appData.marketResults = data.marketResults;
-            appData.history = data.history || [];
-            
-            localStorage.removeItem('investment_game_backup');
-            window.saveData();
-            window.showToast('تم استرجاع اليوم السابق بنجاح', 'success');
+            const count = backups.length;
+            const targetDay = backups[count - 1].day;
+            showConfirm(`سيتم استرجاع اليوم ${appData.day} والعودة لليوم ${targetDay}. (متبقي ${count} أيام للتراجع) متأكد؟`, () => {
+                const data = backups.pop();
+                localStorage.setItem('investment_game_backups', JSON.stringify(backups));
+                
+                appData.day = data.day;
+                appData.status = data.status;
+                appData.students = data.students;
+                appData.investments = data.investments;
+                appData.marketResults = data.marketResults;
+                appData.history = data.history || [];
+                
+                window.saveData();
+                window.showToast(`تم استرجاع اليوم ${appData.day} بنجاح (متبقي ${backups.length} أيام)`, 'success');
+            }, 'استرجاع', 'bg-amber-600 hover:bg-amber-500');
         };
 
         window.startNewDay = () => {
@@ -2323,14 +2545,14 @@
         };
 
         window.resetGame = () => {
-            if(confirm('سيتم تصفير جميع البيانات. متأكد؟')) {
+            showConfirm('سيتم تصفير جميع البيانات. متأكد؟', () => {
                 appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {}, history: [], countdown: { active: false, startAt: 0, duration: 10 }, sessionTimer: { active: false, startAt: 0, duration: 600 }, marketSettings: {
                     safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
                     balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
                     riskMinP: 10, riskMaxP: 25, riskMinL: 10, riskMaxL: 20, riskProb: 30
                 }};
                 window.saveData();
-            }
+            });
         };
 
         window.showToast = (msg, type='warning') => {
