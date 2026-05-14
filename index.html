@@ -764,43 +764,81 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- 4. شاشة المشاهد (للطلاب - جوال) -->
+    <!-- 4. شاشة المشاهد (للطلاب - جوال مُحسّنة) -->
     <!-- ========================================== -->
-    <div id="viewerView" class="w-full max-w-lg hidden flex-col items-center gap-4 mb-20 px-2">
-        <header class="text-center w-full">
-            <h1 class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400 mb-3">تحدي المستثمر الذكي</h1>
-            <div class="inline-flex items-center gap-2 bg-slate-800 border border-slate-700 rounded-full px-3 py-1.5">
-                <span class="text-slate-300 font-bold text-sm">يوم</span>
-                <span id="viewerDay" class="bg-sky-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-black text-lg">1</span>
-                <span id="viewerStatus" class="text-xs font-bold text-sky-400 bg-sky-900/20 px-3 py-1 rounded-full"></span>
-            </div>
-        </header>
+    <div id="viewerView" class="w-full max-w-lg hidden flex-col gap-3 pb-24 px-2">
+        <!-- المتصدر الأول -->
+        <div id="viewerTopPlayer" class="hidden bg-gradient-to-r from-amber-900/40 to-yellow-900/20 border border-amber-700/30 rounded-2xl p-4 text-center">
+            <div class="text-4xl mb-1">👑</div>
+            <div id="viewerTopName" class="text-white font-black text-lg"></div>
+            <div id="viewerTopBalance" class="text-2xl font-black text-amber-400 mt-1"></div>
+        </div>
 
-        <!-- الصناديق الثلاثة -->
-        <div id="viewerFunds" class="grid grid-cols-3 gap-2 w-full">
-            <div class="bg-slate-800/60 rounded-xl border border-blue-900/30 p-3 text-center">
-                <div class="text-blue-400 font-bold text-xs mb-1">الدرع المالي</div>
-                <div class="text-slate-500 text-[9px] mb-1">آمن</div>
-                <div id="viewerResSafe" class="text-2xl font-black text-slate-600">؟</div>
-            </div>
-            <div class="bg-slate-800/60 rounded-xl border border-purple-900/30 p-3 text-center">
-                <div class="text-purple-400 font-bold text-xs mb-1">مسار النمو</div>
-                <div class="text-slate-500 text-[9px] mb-1">متوازن</div>
-                <div id="viewerResBalanced" class="text-2xl font-black text-slate-600">؟</div>
-            </div>
-            <div class="bg-slate-800/60 rounded-xl border border-orange-900/30 p-3 text-center">
-                <div class="text-orange-400 font-bold text-xs mb-1">المغامر</div>
-                <div class="text-slate-500 text-[9px] mb-1">خطر</div>
-                <div id="viewerResRisky" class="text-2xl font-black text-slate-600">؟</div>
+        <!-- شريط الأخبار -->
+        <div class="bg-slate-800/60 rounded-xl border border-slate-700/50 overflow-hidden">
+            <div class="ticker-wrap rounded-xl" style="margin-bottom:0">
+                <div id="viewerTicker" class="ticker-content font-bold text-xs md:text-sm tracking-wider text-slate-300" dir="ltr">
+                    --- بانتظار السوق ---
+                </div>
             </div>
         </div>
 
-        <!-- المتصدرين -->
-        <div class="w-full bg-slate-800/80 rounded-xl border border-slate-700 overflow-hidden">
-            <div class="bg-slate-700/50 p-2 text-center border-b border-slate-700">
-                <span class="text-white font-bold text-sm">المتصدرون</span>
+        <!-- حالة السوق -->
+        <div class="text-center">
+            <span id="viewerDay" class="bg-sky-900/40 text-sky-400 border border-sky-800/50 rounded-full px-4 py-1.5 text-sm font-bold inline-flex items-center gap-2">
+                <span>يوم</span><span class="text-white text-lg">1</span>
+            </span>
+            <span id="viewerStatus" class="text-xs font-bold ml-2 px-3 py-1.5 rounded-full"></span>
+        </div>
+
+        <!-- الصناديق الثلاثة -->
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gradient-to-b from-blue-950/40 to-slate-800/60 rounded-2xl border border-blue-800/30 p-3 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/50 to-blue-400/10"></div>
+                <div class="text-2xl mb-1">🛡️</div>
+                <div class="text-blue-400 font-black text-xs mb-1">الدرع المالي</div>
+                <div class="text-blue-500/50 text-[9px] mb-2">أمان عالي</div>
+                <div id="viewerResSafe" class="text-xl font-black text-slate-600">؟</div>
             </div>
-            <div id="viewerLeaderboard" class="divide-y divide-slate-700/50"></div>
+            <div class="bg-gradient-to-b from-purple-950/40 to-slate-800/60 rounded-2xl border border-purple-800/30 p-3 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-500/50 to-purple-400/10"></div>
+                <div class="text-2xl mb-1">📈</div>
+                <div class="text-purple-400 font-black text-xs mb-1">مسار النمو</div>
+                <div class="text-purple-500/50 text-[9px] mb-2">متوازن</div>
+                <div id="viewerResBalanced" class="text-xl font-black text-slate-600">؟</div>
+            </div>
+            <div class="bg-gradient-to-b from-orange-950/40 to-slate-800/60 rounded-2xl border border-orange-800/30 p-3 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-orange-500/50 to-orange-400/10"></div>
+                <div class="text-2xl mb-1">⚡</div>
+                <div class="text-orange-400 font-black text-xs mb-1">المغامر</div>
+                <div class="text-orange-500/50 text-[9px] mb-2">مخاطرة عالية</div>
+                <div id="viewerResRisky" class="text-xl font-black text-slate-600">؟</div>
+            </div>
+        </div>
+
+        <!-- المتصدرين - شاشة تداول -->
+        <div class="bg-[#0a0a0a] rounded-xl border border-slate-700 overflow-hidden shadow-[0_0_20px_rgba(0,0,0,0.6)]">
+            <div class="bg-slate-900 px-3 py-2.5 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    <span>شاشة التداول</span>
+                </h2>
+                <span class="text-[9px] text-slate-500 font-mono">بيانات السوق</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right text-white">
+                    <thead class="bg-slate-800/80 text-slate-500 text-[10px] uppercase tracking-wider border-b border-slate-700">
+                        <tr>
+                            <th class="py-1.5 px-2 w-8 text-center">#</th>
+                            <th class="py-1.5 px-2">المستثمر</th>
+                            <th class="py-1.5 px-2 text-left">الرصيد</th>
+                            <th class="py-1.5 px-2 text-left">التغير</th>
+                            <th class="py-1.5 px-2 text-left">%</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewerLeaderboard" class="font-mono text-xs"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -881,7 +919,7 @@
             investments: {},
             history: [],
             countdown: { active: false, startAt: 0, duration: 10 },
-            sessionTimer: { active: false, startAt: 0, duration: 600 },
+            sessionTimer: { active: false, startAt: 0, duration: 600, processing: false },
             marketSettings: {
                 safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
                 balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
@@ -1115,7 +1153,24 @@
                 panel.addEventListener('input', () => saveMarketSettings());
             }
 
-            setInterval(() => { processCountdown(); processSessionTimer(); }, 500);
+            setInterval(() => { processCountdown(); processSessionTimer(); autoProcessExpiredTimer(); }, 500);
+
+            function autoProcessExpiredTimer() {
+                const st = appData.sessionTimer;
+                if (!st || !st.active || st.processing) return;
+                if (appData.status !== 'setup') return;
+                const elapsed = (Date.now() - st.startAt) / 1000;
+                if (elapsed >= st.duration) {
+                    st.processing = true;
+                    st.active = false;
+                    window.saveData();
+                    setTimeout(() => {
+                        if (appData.status === 'setup') {
+                            window.processMarketResults();
+                        }
+                    }, 600);
+                }
+            }
         }
 
         function fallbackToLocal() {
@@ -1305,12 +1360,10 @@
             const elapsed = (Date.now() - st.startAt) / 1000;
             const remaining = Math.max(0, Math.ceil(st.duration - elapsed));
             
-            if (remaining <= 0 && window.userRole === 'admin') {
-                appData.sessionTimer.active = false;
-                window.saveData();
+            if (remaining <= 0) {
                 bar.classList.add('hidden');
-                if (sessionTimerInterval) { clearInterval(sessionTimerInterval); sessionTimerInterval = null; }
-                setTimeout(() => processMarketResults(), 500);
+                fill.className = 'h-full bg-red-500 rounded-full';
+                label.className = 'text-red-400 font-bold text-sm md:text-base font-mono tracking-wider session-timer-urgent';
                 return;
             }
             
@@ -1350,7 +1403,7 @@
             const minutes = parseInt(minInput?.value) || 30;
             const duration = minutes * 60;
             
-            appData.sessionTimer = { active: true, startAt: Date.now(), duration: duration };
+            appData.sessionTimer = { active: true, startAt: Date.now(), duration: duration, processing: false };
             window.saveData();
             processSessionTimer();
             if (!sessionTimerInterval) {
@@ -2122,54 +2175,75 @@
         }
 
         function renderViewer() {
-            document.getElementById('viewerDay').textContent = appData.day;
+            const elDay = document.getElementById('viewerDay');
             const statusEl = document.getElementById('viewerStatus');
+            const topPlayer = document.getElementById('viewerTopPlayer');
+            const ticker = document.getElementById('viewerTicker');
+            const list = document.getElementById('viewerLeaderboard');
+
+            if (elDay) elDay.innerHTML = '<span>يوم</span><span class="text-white text-lg">' + appData.day + '</span>';
             
             if (appData.status === 'setup') {
-                statusEl.textContent = 'السوق مفتوح';
-                statusEl.className = 'text-xs font-bold text-amber-400 bg-amber-900/20 px-3 py-1 rounded-full';
+                if (statusEl) { statusEl.textContent = 'السوق مفتوح'; statusEl.className = 'text-xs font-bold text-amber-400 bg-amber-900/20 px-3 py-1.5 rounded-full'; }
                 document.getElementById('viewerResSafe').textContent = '؟';
-                document.getElementById('viewerResSafe').className = 'text-2xl font-black text-slate-600';
+                document.getElementById('viewerResSafe').className = 'text-xl font-black text-slate-600';
                 document.getElementById('viewerResBalanced').textContent = '؟';
-                document.getElementById('viewerResBalanced').className = 'text-2xl font-black text-slate-600';
+                document.getElementById('viewerResBalanced').className = 'text-xl font-black text-slate-600';
                 document.getElementById('viewerResRisky').textContent = '؟';
-                document.getElementById('viewerResRisky').className = 'text-2xl font-black text-slate-600';
+                document.getElementById('viewerResRisky').className = 'text-xl font-black text-slate-600';
+                if (ticker) ticker.innerHTML = '<span class="text-slate-500">السوق مفتوح - بانتظار النتائج</span>';
+                if (topPlayer) topPlayer.classList.add('hidden');
             } else {
-                statusEl.textContent = 'النتائج ظهرت';
-                statusEl.className = 'text-xs font-bold text-emerald-400 bg-emerald-900/20 px-3 py-1 rounded-full';
-                
+                if (statusEl) { statusEl.textContent = 'النتائج ظهرت'; statusEl.className = 'text-xs font-bold text-emerald-400 bg-emerald-900/20 px-3 py-1.5 rounded-full'; }
+
                 const draw = (val, el) => {
-                    if (val > 0) { el.textContent = '+' + val + '%'; el.className = 'text-2xl font-black text-emerald-400'; }
-                    else if (val < 0) { el.textContent = val + '%'; el.className = 'text-2xl font-black text-red-400'; }
-                    else { el.textContent = '0%'; el.className = 'text-2xl font-black text-slate-400'; }
+                    if (val > 0) { el.textContent = '+' + val + '%'; el.className = 'text-xl font-black text-emerald-400'; }
+                    else if (val < 0) { el.textContent = val + '%'; el.className = 'text-xl font-black text-red-400'; }
+                    else { el.textContent = '0%'; el.className = 'text-xl font-black text-slate-400'; }
                 };
                 draw(appData.marketResults.safe, document.getElementById('viewerResSafe'));
                 draw(appData.marketResults.balanced, document.getElementById('viewerResBalanced'));
                 draw(appData.marketResults.risky, document.getElementById('viewerResRisky'));
+
+                const formatTicker = (name, val) => `<span class="mx-3 text-slate-200">${name}: <span class="${val > 0 ? 'text-emerald-400' : (val < 0 ? 'text-red-400' : 'text-slate-400')}">${val > 0 ? '+' : ''}${val}% ${val > 0 ? '▲' : (val < 0 ? '▼' : '▬')}</span></span>`;
+                const mr = appData.marketResults;
+                if (ticker) ticker.innerHTML = formatTicker('الدرع', mr.safe) + ' | ' + formatTicker('النمو', mr.balanced) + ' | ' + formatTicker('المغامر', mr.risky) + ' | <span class="mx-3 text-amber-400"> تحديث اليوم ' + appData.day + ' </span>';
             }
-            
+
             const sorted = [...appData.students].sort((a, b) => b.balance - a.balance);
-            const list = document.getElementById('viewerLeaderboard');
             list.innerHTML = '';
-            
+
             if (sorted.length === 0) {
-                list.innerHTML = '<div class="text-center text-slate-500 text-xs py-6">لا يوجد مستثمرين بعد</div>';
+                list.innerHTML = '<tr><td colspan="5" class="text-center text-slate-500 text-xs py-8">لا يوجد مستثمرين بعد</td></tr>';
+                if (topPlayer) topPlayer.classList.add('hidden');
                 return;
             }
-            
+
+            if (topPlayer && appData.status === 'results') {
+                topPlayer.classList.remove('hidden');
+                document.getElementById('viewerTopName').textContent = '👑 ' + sorted[0].name;
+                document.getElementById('viewerTopBalance').textContent = fmt(sorted[0].balance);
+            } else if (topPlayer) {
+                topPlayer.classList.add('hidden');
+            }
+
             sorted.forEach((s, i) => {
                 const diff = r2(s.lastDiff || 0);
-                const arrow = diff > 0 ? '▲' : (diff < 0 ? '▼' : '');
+                const oldBalance = s.balance - diff;
+                const pct = oldBalance > 0 ? r2((diff / oldBalance) * 100) : 0;
+                const arrow = diff > 0 ? '▲' : (diff < 0 ? '▼' : '▬');
                 const color = diff > 0 ? 'text-emerald-400' : (diff < 0 ? 'text-red-400' : 'text-slate-500');
                 const sign = diff > 0 ? '+' : '';
+                const rankIcon = i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : '<span class="text-slate-500">' + (i+1) + '</span>'));
                 
                 list.innerHTML += `
-                    <div class="flex items-center gap-2 px-3 py-2 ${appData.status === 'results' && diff > 0 ? 'stock-flash-up' : (diff < 0 ? 'stock-flash-down' : '')}">
-                        <span class="text-slate-500 text-xs w-5 text-center font-bold">${i === 0 ? '👑' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : (i+1)))}</span>
-                        <span class="flex-1 text-white font-bold text-sm truncate">${s.name}</span>
-                        <span class="text-white font-mono font-bold text-sm">${fmt(s.balance)}</span>
-                        <span class="${color} text-xs font-mono w-14 text-left">${sign}${fmt(diff)} ${arrow}</span>
-                    </div>
+                    <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition-colors ${appData.status === 'results' && diff !== 0 ? (diff > 0 ? 'stock-flash-up' : 'stock-flash-down') : ''}">
+                        <td class="py-2 px-2 text-center text-sm">${rankIcon}</td>
+                        <td class="py-2 px-2 font-bold text-slate-100 text-xs truncate max-w-[80px]">${s.name}</td>
+                        <td class="py-2 px-2 text-left font-bold text-white text-xs">${fmt(s.balance)}</td>
+                        <td class="py-2 px-2 text-left text-xs ${color}">${sign}${fmt(diff)} ${arrow}</td>
+                        <td class="py-2 px-2 text-left text-xs ${color}">${sign}${fmt(pct)}%</td>
+                    </tr>
                 `;
             });
         }
@@ -2510,6 +2584,7 @@
             });
 
             window.showToast('تم حساب النتائج بنجاح!', 'success');
+            appData.sessionTimer.processing = false;
             window.saveData(); 
         };
 
