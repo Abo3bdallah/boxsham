@@ -1157,18 +1157,14 @@
 
             function autoProcessExpiredTimer() {
                 const st = appData.sessionTimer;
-                if (!st || !st.active || st.processing) return;
+                if (!st || !st.active) return;
                 if (appData.status !== 'setup') return;
                 const elapsed = (Date.now() - st.startAt) / 1000;
                 if (elapsed >= st.duration) {
-                    st.processing = true;
-                    st.active = false;
-                    window.saveData();
-                    setTimeout(() => {
-                        if (appData.status === 'setup') {
-                            window.processMarketResults();
-                        }
-                    }, 600);
+                    console.log('⏰ مؤقت الجلسة انتهى!', {elapsed, duration: st.duration, active: st.active, status: appData.status, role: window.userRole});
+                    appData.sessionTimer.active = false;
+                    console.log('🚀 جاري تشغيل السوق...');
+                    window.processMarketResults();
                 }
             }
         }
@@ -1362,8 +1358,6 @@
             
             if (remaining <= 0) {
                 bar.classList.add('hidden');
-                fill.className = 'h-full bg-red-500 rounded-full';
-                label.className = 'text-red-400 font-bold text-sm md:text-base font-mono tracking-wider session-timer-urgent';
                 return;
             }
             
@@ -1509,13 +1503,16 @@
 
             appData.students.forEach(student => {
                 const balanceVal = r2(student.balance);
+                const inv = appData.investments[student.id] || { safe: 0, balanced: 0, risky: 0 };
+                const totalInv = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
+                const remaining = r2(balanceVal - totalInv);
                 
                 const card = document.createElement('div');
                 card.className = 'entry-card bg-slate-800/80 border border-slate-700 hover:border-emerald-500/50 rounded-2xl p-4 cursor-pointer transition-all shadow-lg hover:shadow-emerald-900/10';
                 card.onclick = () => openStudentModal(student.id);
                 
                 card.innerHTML = `
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 mb-2">
                         <div class="p-2.5 rounded-xl bg-slate-700/50 border border-slate-600 shrink-0">
                             <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                         </div>
@@ -1528,6 +1525,10 @@
                             <span id="entry_bal_${student.id}" class="text-lg md:text-2xl font-black text-emerald-400 min-w-[60px] text-center">${fmt(balanceVal)}</span>
                             <button onclick="event.stopPropagation(); quickEntryAdjustBalance('${student.id}', 50)" class="bg-emerald-600/30 hover:bg-emerald-600 text-emerald-400 hover:text-white w-8 h-8 md:w-9 md:h-9 rounded-full font-black text-sm transition-all active:scale-90" title="إضافة 50 للمحفظة">+50</button>
                         </div>
+                    </div>
+                    <div class="flex items-center gap-2 border-t border-slate-700/50 pt-2">
+                        <span class="text-slate-500 text-[10px] md:text-xs font-bold shrink-0">المتبقي:</span>
+                        <input type="number" id="entry_cash_${student.id}" step="0.01" value="${remaining}" onclick="event.stopPropagation()" oninput="window.handleCashInput('${student.id}', this.value)" class="flex-1 bg-slate-900 border border-slate-600 rounded-lg px-2 py-1 text-center font-bold text-xs md:text-sm text-amber-400 focus:border-emerald-500 outline-none transition-colors" dir="ltr">
                     </div>
                 `;
                 wrapper.appendChild(card);
