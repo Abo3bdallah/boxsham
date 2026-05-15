@@ -654,21 +654,26 @@
                     <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
                         <span class="block text-emerald-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الربح (+)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="safeMinP" step="0.1" value="1" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="safeMaxP" step="0.1" value="3" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="safeMinP" step="0.1" value="2" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="safeMaxP" step="0.1" value="6" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
                         <span class="block text-red-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الخسارة (-)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="safeMinL" step="0.1" value="0.5" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="safeMaxL" step="0.1" value="2" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="safeMinL" step="0.1" value="1" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="safeMaxL" step="0.1" value="3" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="safeProb" step="0.01" min="0" max="100" value="80" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-blue-500 outline-none" dir="ltr">
+                        <input type="number" id="safeProb" step="0.01" min="0" max="100" value="78" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-blue-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
+                        <div class="mt-2 pt-2 border-t border-slate-700/30">
+                            <span class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center font-bold">تعافي بعد الخسارة %</span>
+                            <input type="number" id="safeRecovery" step="0.01" min="0" max="50" value="5" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-blue-500 outline-none" dir="ltr">
+                            <span class="block text-slate-500 text-[7px] text-center mt-1">0 = إيقاف الميزة</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -678,21 +683,26 @@
                     <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
                         <span class="block text-emerald-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الربح (+)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="balMinP" step="0.1" value="4" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="balMaxP" step="0.1" value="8" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="balMinP" step="0.1" value="6" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="balMaxP" step="0.1" value="18" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
                         <span class="block text-red-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الخسارة (-)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="balMinL" step="0.1" value="2" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="balMaxL" step="0.1" value="6" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="balMinL" step="0.1" value="4" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="balMaxL" step="0.1" value="10" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="balProb" step="0.01" min="0" max="100" value="50" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-purple-500 outline-none" dir="ltr">
+                        <input type="number" id="balProb" step="0.01" min="0" max="100" value="52" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-purple-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
+                        <div class="mt-2 pt-2 border-t border-slate-700/30">
+                            <span class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center font-bold">تعافي بعد الخسارة %</span>
+                            <input type="number" id="balRecovery" step="0.01" min="0" max="50" value="7" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-purple-500 outline-none" dir="ltr">
+                            <span class="block text-slate-500 text-[7px] text-center mt-1">0 = إيقاف الميزة</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -702,21 +712,26 @@
                     <div class="bg-emerald-900/20 p-2 rounded border border-emerald-900/50">
                         <span class="block text-emerald-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الربح (+)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="riskMinP" step="0.1" value="10" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="riskMaxP" step="0.1" value="25" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="riskMinP" step="0.1" value="18" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="riskMaxP" step="0.1" value="40" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-emerald-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-red-900/20 p-2 rounded border border-red-900/50">
                         <span class="block text-red-400 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">نطاق الخسارة (-)</span>
                         <div class="flex gap-2">
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="riskMinL" step="0.1" value="10" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
-                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="riskMaxL" step="0.1" value="20" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقل%</label><input type="number" id="riskMinL" step="0.1" value="12" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
+                            <div class="w-1/2"><label class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center">أقصى%</label><input type="number" id="riskMaxL" step="0.1" value="35" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-red-500 outline-none" dir="ltr"></div>
                         </div>
                     </div>
                     <div class="bg-slate-800/60 p-2 rounded border border-slate-700/50 mt-2">
                         <span class="block text-slate-300 text-[10px] md:text-[11px] mb-1.5 md:mb-2 text-center font-bold">احتمالية الربح %</span>
-                        <input type="number" id="riskProb" step="0.01" min="0" max="100" value="30" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-orange-500 outline-none" dir="ltr">
+                        <input type="number" id="riskProb" step="0.01" min="0" max="100" value="35" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-orange-500 outline-none" dir="ltr">
                         <span class="block text-slate-500 text-[8px] md:text-[9px] mt-1 text-center">نسبة فرصة تحقيق ربح</span>
+                        <div class="mt-2 pt-2 border-t border-slate-700/30">
+                            <span class="block text-slate-400 text-[9px] md:text-[10px] mb-1 text-center font-bold">تعافي بعد الخسارة %</span>
+                            <input type="number" id="riskRecovery" step="0.01" min="0" max="50" value="10" class="w-full p-1.5 md:p-2 rounded bg-slate-800 text-white border border-slate-600 text-center text-sm md:text-base font-bold focus:border-orange-500 outline-none" dir="ltr">
+                            <span class="block text-slate-500 text-[7px] text-center mt-1">0 = إيقاف الميزة</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -920,6 +935,7 @@
             history: [],
             countdown: { active: false, startAt: 0, duration: 10 },
             sessionTimer: { active: false, startAt: 0, duration: 600, processing: false },
+            fundStreaks: { safe: 0, balanced: 0, risky: 0 },
             marketSettings: {
                 safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
                 balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
@@ -1208,7 +1224,8 @@
             const s = appData.marketSettings || {};
             const fields = ['safeMinP','safeMaxP','safeMinL','safeMaxL','safeProb',
                           'balMinP','balMaxP','balMinL','balMaxL','balProb',
-                          'riskMinP','riskMaxP','riskMinL','riskMaxL','riskProb'];
+                          'riskMinP','riskMaxP','riskMinL','riskMaxL','riskProb',
+                          'safeRecovery','balRecovery','riskRecovery'];  // line 1
             fields.forEach(f => {
                 const el = document.getElementById(f);
                 if (el && s[f] !== undefined) el.value = s[f];
@@ -2484,6 +2501,7 @@
         };
 
         window.processMarketResults = () => {
+            if (appData.status === 'results') return;
             if (window.currentModalStudentId) closeStudentModal();
 
             const backups = JSON.parse(localStorage.getItem('investment_game_backups') || '[]');
@@ -2501,6 +2519,9 @@
             }
             
             const s = appData.marketSettings || {};
+            if (s.safeRecovery == null) s.safeRecovery = 5;
+            if (s.balRecovery == null) s.balRecovery = 7;
+            if (s.riskRecovery == null) s.riskRecovery = 10;
             const safeMinP = s.safeMinP;
             const safeMaxP = s.safeMaxP;
             const safeMinL = s.safeMinL;
@@ -2536,22 +2557,33 @@
 
             const bellRandom = () => (Math.random() + Math.random() + Math.random()) / 3;
 
-            const generateReturn = (minProfit, maxProfit, minLoss, maxLoss, profitProb) => {
+            const generateReturn = (minProfit, maxProfit, minLoss, maxLoss, profitProb, fundKey, recoveryRate) => {
                 const minP = Math.min(Math.abs(parseFloat(minProfit)), Math.abs(parseFloat(maxProfit)));
                 const maxP = Math.max(Math.abs(parseFloat(minProfit)), Math.abs(parseFloat(maxProfit)));
                 const minL = Math.min(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
                 const maxL = Math.max(Math.abs(parseFloat(minLoss)), Math.abs(parseFloat(maxLoss)));
-                const prob = parseFloat(profitProb) / 100;
-                if (Math.random() < prob) {
-                    return parseFloat((bellRandom() * (maxP - minP) + minP).toFixed(2));
-                } else {
-                    return parseFloat((-(bellRandom() * (maxL - minL) + minL)).toFixed(2));
+                let prob = parseFloat(profitProb) / 100;
+                
+                const streak = (appData.fundStreaks && appData.fundStreaks[fundKey]) || 0;
+                const recovery = parseFloat(recoveryRate) || 0;
+                if (recovery > 0 && streak > 0) {
+                    prob = Math.min(0.95, prob + (streak * recovery / 100));
                 }
+                
+                const value = Math.random() < prob
+                    ? parseFloat((bellRandom() * (maxP - minP) + minP).toFixed(2))
+                    : parseFloat((-(bellRandom() * (maxL - minL) + minL)).toFixed(2));
+                
+                if (!appData.fundStreaks) appData.fundStreaks = { safe: 0, balanced: 0, risky: 0 };
+                if (value > 0) { appData.fundStreaks[fundKey] = 0; }
+                else { appData.fundStreaks[fundKey] = streak + 1; }
+                
+                return value;
             };
 
-            const pSafe = generateReturn(safeMinP, safeMaxP, safeMinL, safeMaxL, safeProb);
-            const pBal = generateReturn(balMinP, balMaxP, balMinL, balMaxL, balProb);
-            const pRisk = generateReturn(riskMinP, riskMaxP, riskMinL, riskMaxL, riskProb);
+            const pSafe = generateReturn(safeMinP, safeMaxP, safeMinL, safeMaxL, safeProb, 'safe', s.safeRecovery);
+            const pBal = generateReturn(balMinP, balMaxP, balMinL, balMaxL, balProb, 'balanced', s.balRecovery);
+            const pRisk = generateReturn(riskMinP, riskMaxP, riskMinL, riskMaxL, riskProb, 'risky', s.riskRecovery);
 
             appData.students = appData.students.map(student => {
                 const inv = appData.investments[student.id] || {safe:0, balanced:0, risky:0};
@@ -2562,10 +2594,24 @@
                 
                 const totalInvested = r2((inv.safe||0) + (inv.balanced||0) + (inv.risky||0));
                 const cash = r2(student.balance) - totalInvested;
-                const newBalance = r2(cash + safeReturn + balReturn + riskReturn);
+                let newBalance = r2(cash + safeReturn + balReturn + riskReturn);
+                if (newBalance < 100) {
+                    newBalance = 100;
+                    const totalOrig = (inv.safe || 0) + (inv.balanced || 0) + (inv.risky || 0);
+                    if (totalOrig > 0) {
+                        appData.investments[student.id] = {
+                            safe: r2((inv.safe || 0) / totalOrig * 100),
+                            balanced: r2((inv.balanced || 0) / totalOrig * 100),
+                            risky: r2((inv.risky || 0) / totalOrig * 100)
+                        };
+                    } else {
+                        appData.investments[student.id] = { safe: 0, balanced: 0, risky: 0 };
+                    }
+                } else {
+                    appData.investments[student.id] = { safe: safeReturn, balanced: balReturn, risky: riskReturn };
+                }
                 const diff = newBalance - r2(student.balance);
 
-                appData.investments[student.id] = { safe: safeReturn, balanced: balReturn, risky: riskReturn };
                 return { ...student, balance: newBalance, lastDiff: diff };
             });
 
@@ -2623,10 +2669,11 @@
 
         window.resetGame = () => {
             showConfirm('سيتم تصفير جميع البيانات. متأكد؟', () => {
-                appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {}, history: [], countdown: { active: false, startAt: 0, duration: 10 }, sessionTimer: { active: false, startAt: 0, duration: 600 }, marketSettings: {
-                    safeMinP: 1, safeMaxP: 3, safeMinL: 0.5, safeMaxL: 2, safeProb: 80,
-                    balMinP: 4, balMaxP: 8, balMinL: 2, balMaxL: 6, balProb: 50,
-                    riskMinP: 10, riskMaxP: 25, riskMinL: 10, riskMaxL: 20, riskProb: 30
+                appData = { day: 1, status: 'setup', marketResults: { safe: null, balanced: null, risky: null }, students: [], investments: {}, history: [], countdown: { active: false, startAt: 0, duration: 10 }, sessionTimer: { active: false, startAt: 0, duration: 600, processing: false }, fundStreaks: { safe: 0, balanced: 0, risky: 0 }, marketSettings: {
+                    safeMinP: 2, safeMaxP: 6, safeMinL: 1, safeMaxL: 3, safeProb: 78,
+                    balMinP: 6, balMaxP: 18, balMinL: 4, balMaxL: 10, balProb: 52,
+                    riskMinP: 18, riskMaxP: 40, riskMinL: 12, riskMaxL: 35, riskProb: 35,
+                    safeRecovery: 5, balRecovery: 7, riskRecovery: 10
                 }};
                 window.saveData();
             });
