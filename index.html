@@ -1135,6 +1135,13 @@
                             pingDot.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
                             solidDot.className = "relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500";
 
+                            if (isCloudSynced && docRef && currentUser) {
+                                if (sessionStorage.getItem('_restored_from_backup')) {
+                                    sessionStorage.removeItem('_restored_from_backup');
+                                    setDoc(docRef, appData).catch(() => {});
+                                }
+                            }
+
                             onSnapshot(docRef, (snap) => {
                                 if (snap.exists()) {
                                     const newData = snap.data();
@@ -2731,6 +2738,7 @@
                     btn.textContent = 'يوم ' + entry.day + ' - ' + (entry.students ? entry.students.length : 0) + ' طالب - ' + (entry.status === 'setup' ? 'قبل التشغيل' : 'بعد النتائج');
                     btn.onclick = () => {
                         const d = entry;
+                        sessionStorage.setItem('_restored_from_backup', '1');
                         localStorage.setItem('investment_game_local', JSON.stringify({
                             day: d.day, status: d.status,
                             marketResults: d.marketResults || { safe: null, balanced: null, risky: null },
