@@ -2734,8 +2734,10 @@
                 for (let i = b.length - 1; i >= 0; i--) {
                     const entry = b[i];
                     const btn = document.createElement('button');
-                    btn.className = 'w-full bg-slate-700 hover:bg-amber-700 text-white py-2 rounded-lg font-bold text-sm transition-colors';
-                    btn.textContent = 'يوم ' + entry.day + ' - ' + (entry.students ? entry.students.length : 0) + ' طالب - ' + (entry.status === 'setup' ? 'قبل التشغيل' : 'بعد النتائج');
+                    btn.className = 'w-full bg-slate-700 hover:bg-amber-700 text-white py-2 rounded-lg font-bold text-sm transition-colors text-right px-3';
+                    const d = new Date(entry.timestamp || 0);
+                    const time = entry.timestamp ? d.toLocaleString('ar-SA', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'numeric' }) : 'غير معروف';
+                    btn.textContent = 'يوم ' + entry.day + ' - ' + (entry.students ? entry.students.length : 0) + ' طالب - ' + time;
                     btn.onclick = () => {
                         const d = entry;
                         sessionStorage.setItem('_restored_from_backup', '1');
