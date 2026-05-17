@@ -164,6 +164,7 @@
             <div class="text-center mb-8">
                 <h1 class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-2">تحدي المستثمر الذكي</h1>
                 <p class="text-slate-500 text-sm">محاكي الصناديق الاستثمارية للمجموعات</p>
+                <button onclick="showEmergencyRestore()" class="text-[10px] text-slate-600 hover:text-amber-400 mt-2 transition-colors underline">🆘 استرجاع طارئ من النسخ الاحتياطية</button>
             </div>
             
             <div id="loginRoleSelection">
@@ -860,6 +861,16 @@
     <!-- نافذة الإشعارات المؤقتة (Toast) - مُحسنة للجوال -->
     <div id="toast" class="fixed top-3 md:top-5 left-1/2 transform -translate-x-1/2 -translate-y-[150%] opacity-0 transition-all duration-300 bg-slate-800 border-b-4 border-amber-500 text-white px-4 md:px-6 py-3 md:py-4 rounded-xl shadow-2xl z-[70] flex items-center gap-2 w-[90%] max-w-md text-sm md:text-base">
         <span id="toastMessage" class="font-bold text-center w-full">رسالة تنبيه</span>
+    </div>
+
+    <!-- نافذة استرجاع الطوارئ من النسخ الاحتياطية -->
+    <div id="emergencyRestore" class="fixed inset-0 z-[95] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-slate-800 rounded-2xl border border-amber-700 w-full max-w-sm shadow-2xl p-5">
+            <h3 class="text-amber-400 font-black text-lg mb-3 text-center">🆘 استرجاع طارئ</h3>
+            <p id="emergencyMsg" class="text-slate-300 text-sm text-center mb-4"></p>
+            <div id="emergencyActions" class="space-y-2"></div>
+            <button onclick="document.getElementById('emergencyRestore').classList.add('hidden')" class="w-full text-slate-500 text-sm mt-3">إغلاق</button>
+        </div>
     </div>
 
     <!-- العداد التنازلي المتزامن -->
@@ -2700,6 +2711,49 @@
         } else {
             updateNavVisibility();
         }
+
+        // === نظام استرجاع الطوارئ ===
+        window.showEmergencyRestore = () => {
+            const b = JSON.parse(localStorage.getItem('investment_game_backups') || '[]');
+            const msg = document.getElementById('emergencyMsg');
+            const actions = document.getElementById('emergencyActions');
+            
+            if (b.length === 0) {
+                msg.textContent = 'لا توجد نسخ احتياطية للاسترجاع';
+                actions.innerHTML = '';
+            } else {
+                msg.textContent = 'تم العثور على ' + b.length + ' نسخ احتياطية. اختر يوم:';
+                actions.innerHTML = '';
+                for (let i = b.length - 1; i >= 0; i--) {
+                    const entry = b[i];
+                    const btn = document.createElement('button');
+                    btn.className = 'w-full bg-slate-700 hover:bg-amber-700 text-white py-2 rounded-lg font-bold text-sm transition-colors';
+                    btn.textContent = 'يوم ' + entry.day + ' - ' + (entry.students ? entry.students.length : 0) + ' طالب - ' + (entry.status === 'setup' ? 'قبل التشغيل' : 'بعد النتائج');
+                    btn.onclick = () => {
+                        const d = entry;
+                        localStorage.setItem('investment_game_local', JSON.stringify({
+                            day: d.day, status: d.status,
+                            marketResults: d.marketResults || { safe: null, balanced: null, risky: null },
+                            students: d.students || [], investments: d.investments || {},
+                            history: d.history || [],
+                            countdown: { active: false, startAt: 0, duration: 10 },
+                            sessionTimer: { active: false, startAt: 0, duration: 600, processing: false },
+                            fundStreaks: { safe: 0, balanced: 0, risky: 0 },
+                            marketSettings: {
+                                safeMinP: 2, safeMaxP: 6, safeMinL: 1, safeMaxL: 3, safeProb: 78,
+                                balMinP: 6, balMaxP: 18, balMinL: 4, balMaxL: 10, balProb: 52,
+                                riskMinP: 18, riskMaxP: 40, riskMinL: 12, riskMaxL: 35, riskProb: 35,
+                                safeRecovery: 5, balRecovery: 7, riskRecovery: 10
+                            }
+                        }));
+                        location.reload();
+                    };
+                    actions.appendChild(btn);
+                }
+            }
+            document.getElementById('emergencyRestore').classList.remove('hidden');
+            document.getElementById('emergencyRestore').classList.add('flex');
+        };
     </script>
 </body>
 </html>
